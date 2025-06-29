@@ -1,4 +1,3 @@
-
 interface WordPressCredentials {
   siteUrl: string;
   username: string;
@@ -13,6 +12,11 @@ interface GeneratedPost {
   metaDescription: string;
   tags: string[];
   imageUrl: string;
+  // Campi aggiuntivi per AIOSEO
+  aioseoTitle?: string;
+  aioseoDescription?: string;
+  focusKeyphrase?: string;
+  aioseoTags?: string[];
 }
 
 // Funzione per verificare i permessi utente
@@ -160,7 +164,7 @@ export const publishToWordPress = async (
   const { siteUrl, username, password } = credentials;
   const apiUrl = `${siteUrl.replace(/\/$/, '')}/wp-json/wp/v2/posts`;
   
-  console.log("Pubblicando post su:", apiUrl);
+  console.log("Pubblicando post migliorato su:", apiUrl);
   
   try {
     // Prima verifichiamo i permessi utente
@@ -194,12 +198,33 @@ export const publishToWordPress = async (
       tags: tagIds,
       ...(featuredMediaId && { featured_media: featuredMediaId }),
       meta: {
+        // Meta tradizionali per Yoast SEO (compatibilità)
         _yoast_wpseo_title: post.seoTitle,
         _yoast_wpseo_metadesc: post.metaDescription,
+        
+        // Meta specifici per AIOSEO
+        _aioseo_title: post.aioseoTitle || post.seoTitle,
+        _aioseo_description: post.aioseoDescription || post.metaDescription,
+        _aioseo_keywords: post.focusKeyphrase || post.tags[0] || '',
+        _aioseo_og_title: post.aioseoTitle || post.title,
+        _aioseo_og_description: post.aioseoDescription || post.excerpt,
+        _aioseo_twitter_title: post.aioseoTitle || post.title,
+        _aioseo_twitter_description: post.aioseoDescription || post.excerpt,
+        
+        // Focus keyphrase per AIOSEO
+        _aioseo_keyphrases: JSON.stringify([{
+          keyphrase: post.focusKeyphrase || post.tags[0] || '',
+          score: 100,
+          analysis: {
+            basic: { isActive: true },
+            title: { isActive: true },
+            description: { isActive: true }
+          }
+        }])
       }
     };
 
-    console.log("Dati post da inviare:", postData);
+    console.log("Dati post migliorato da inviare:", postData);
 
     const response = await fetch(apiUrl, {
       method: 'POST',
@@ -222,7 +247,7 @@ export const publishToWordPress = async (
     }
 
     const result = await response.json();
-    console.log("Post pubblicato con successo:", result);
+    console.log("Post migliorato pubblicato con successo:", result);
     return result;
   } catch (error) {
     console.error("Errore nella pubblicazione:", error);
