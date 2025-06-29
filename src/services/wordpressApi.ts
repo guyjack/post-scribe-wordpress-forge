@@ -15,11 +15,12 @@ interface GeneratedPost {
   imageUrl: string;
 }
 
-export const getWordPressCategories = async (credentials: WordPressCredentials) => {
+// Funzione per verificare i permessi utente
+const checkUserPermissions = async (credentials: WordPressCredentials) => {
   const { siteUrl, username, password } = credentials;
-  const apiUrl = `${siteUrl.replace(/\/$/, '')}/wp-json/wp/v2/categories`;
+  const apiUrl = `${siteUrl.replace(/\/$/, '')}/wp-json/wp/v2/users/me`;
   
-  console.log("Recuperando categorie da:", apiUrl);
+  console.log("Verificando permessi utente...");
   
   try {
     const response = await fetch(apiUrl, {
@@ -31,7 +32,47 @@ export const getWordPressCategories = async (credentials: WordPressCredentials) 
     });
 
     if (!response.ok) {
-      throw new Error(`Errore HTTP: ${response.status}`);
+      throw new Error(`Errore verifica utente: ${response.status}`);
+    }
+
+    const userData = await response.json();
+    console.log("Dati utente:", userData);
+    
+    const userRoles = userData.roles || [];
+    const canPublish = userRoles.includes('administrator') || userRoles.includes('editor') || userRoles.includes('author');
+    
+    if (!canPublish) {
+      throw new Error(`L'utente ${username} ha ruoli: ${userRoles.join(', ')}. Servono permessi di Administrator, Editor o Author per pubblicare post.`);
+    }
+    
+    return userData;
+  } catch (error) {
+    console.error("Errore nella verifica permessi:", error);
+    throw error;
+  }
+};
+
+export const getWordPressCategories = async (credentials: WordPressCredentials) => {
+  const { siteUrl, username, password } = credentials;
+  const apiUrl = `${siteUrl.replace(/\/$/, '')}/wp-json/wp/v2/categories`;
+  
+  console.log("Recuperando categorie da:", apiUrl);
+  
+  try {
+    // Prima verifichiamo i permessi
+    await checkUserPermissions(credentials);
+    
+    const response = await fetch(apiUrl, {
+      method: 'GET',
+      headers: {
+        'Authorization': 'Basic ' + btoa(`${username}:${password}`),
+        'Content-Type': 'application/json',
+      },
+    });
+
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(`Errore HTTP ${response.status}: ${errorData.message || 'Errore nel recupero categorie'}`);
     }
 
     const categories = await response.json();
@@ -100,7 +141,8 @@ const getOrCreateTags = async (
         console.log(`Nuovo tag creato: ${tagName} (ID: ${newTag.id})`);
         tagIds.push(newTag.id);
       } else {
-        console.warn(`Impossibile creare il tag: ${tagName}`);
+        const errorData = await createResponse.json();
+        console.warn(`Impossibile creare il tag ${tagName}:`, errorData);
       }
     } catch (error) {
       console.warn(`Errore nella gestione del tag ${tagName}:`, error);
@@ -120,41 +162,45 @@ export const publishToWordPress = async (
   
   console.log("Pubblicando post su:", apiUrl);
   
-  // Gestisci i tag convertendoli in ID numerici
-  let tagIds: number[] = [];
   try {
-    tagIds = await getOrCreateTags(post.tags, credentials);
-    console.log("Tag ID ottenuti:", tagIds);
-  } catch (error) {
-    console.warn("Errore nella gestione dei tag:", error);
-  }
-  
-  // Prova a caricare l'immagine (opzionale)
-  let featuredMediaId = null;
-  try {
-    featuredMediaId = await uploadImageToWordPress(post.imageUrl, credentials, post.title);
-    console.log("Immagine caricata con ID:", featuredMediaId);
-  } catch (error) {
-    console.warn("Errore nel caricamento dell'immagine (continuo senza):", error);
-  }
-  
-  const postData = {
-    title: post.title,
-    content: post.content,
-    excerpt: post.excerpt,
-    status: 'publish',
-    categories: categoryId ? [parseInt(categoryId)] : [],
-    tags: tagIds, // Ora usiamo gli ID numerici
-    ...(featuredMediaId && { featured_media: featuredMediaId }),
-    meta: {
-      _yoast_wpseo_title: post.seoTitle,
-      _yoast_wpseo_metadesc: post.metaDescription,
+    // Prima verifichiamo i permessi utente
+    const userData = await checkUserPermissions(credentials);
+    console.log("Utente verificato:", userData.name, "- Ruoli:", userData.roles);
+    
+    // Gestisci i tag convertendoli in ID numerici
+    let tagIds: number[] = [];
+    try {
+      tagIds = await getOrCreateTags(post.tags, credentials);
+      console.log("Tag ID ottenuti:", tagIds);
+    } catch (error) {
+      console.warn("Errore nella gestione dei tag:", error);
     }
-  };
+    
+    // Prova a caricare l'immagine (opzionale)
+    let featuredMediaId = null;
+    try {
+      featuredMediaId = await uploadImageToWordPress(post.imageUrl, credentials, post.title);
+      console.log("Immagine caricata con ID:", featuredMediaId);
+    } catch (error) {
+      console.warn("Errore nel caricamento dell'immagine (continuo senza):", error);
+    }
+    
+    const postData = {
+      title: post.title,
+      content: post.content,
+      excerpt: post.excerpt,
+      status: 'publish',
+      categories: categoryId ? [parseInt(categoryId)] : [],
+      tags: tagIds,
+      ...(featuredMediaId && { featured_media: featuredMediaId }),
+      meta: {
+        _yoast_wpseo_title: post.seoTitle,
+        _yoast_wpseo_metadesc: post.metaDescription,
+      }
+    };
 
-  console.log("Dati post da inviare:", postData);
+    console.log("Dati post da inviare:", postData);
 
-  try {
     const response = await fetch(apiUrl, {
       method: 'POST',
       headers: {
@@ -167,6 +213,11 @@ export const publishToWordPress = async (
     if (!response.ok) {
       const errorData = await response.json();
       console.error("Errore nella pubblicazione:", errorData);
+      
+      if (response.status === 401) {
+        throw new Error(`Errore di autenticazione: L'utente ${username} non ha i permessi necessari per pubblicare post. Verifica che l'utente abbia ruolo di Administrator, Editor o Author.`);
+      }
+      
       throw new Error(`Errore HTTP ${response.status}: ${errorData.message || 'Errore sconosciuto'}`);
     }
 
@@ -211,6 +262,11 @@ const uploadImageToWordPress = async (
 
     if (!response.ok) {
       const errorData = await response.json();
+      
+      if (response.status === 401) {
+        throw new Error(`Errore di autenticazione upload immagine: L'utente non ha i permessi per caricare media.`);
+      }
+      
       throw new Error(`Errore upload immagine ${response.status}: ${errorData.message || 'Errore sconosciuto'}`);
     }
 
