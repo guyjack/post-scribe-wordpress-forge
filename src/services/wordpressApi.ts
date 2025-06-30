@@ -19,52 +19,109 @@ interface GeneratedPost {
   aioseoTags?: string[];
 }
 
-// Funzione per verificare i permessi utente
-const checkUserPermissions = async (credentials: WordPressCredentials) => {
-  const { siteUrl, username, password } = credentials;
-  const apiUrl = `${siteUrl.replace(/\/$/, '')}/wp-json/wp/v2/users/me`;
+// Funzione per verificare la connettività base del sito WordPress
+const checkWordPressSiteConnectivity = async (siteUrl: string) => {
+  const cleanUrl = siteUrl.replace(/\/$/, '');
+  const testUrl = `${cleanUrl}/wp-json/wp/v2`;
   
-  console.log("Verificando permessi utente...");
+  console.log("Verificando connettività WordPress:", testUrl);
   
   try {
-    const response = await fetch(apiUrl, {
+    const response = await fetch(testUrl, {
       method: 'GET',
       headers: {
-        'Authorization': 'Basic ' + btoa(`${username}:${password}`),
         'Content-Type': 'application/json',
       },
     });
 
+    console.log("Risposta connettività WordPress:", response.status, response.statusText);
+    
     if (!response.ok) {
-      throw new Error(`Errore verifica utente: ${response.status}`);
+      throw new Error(`Il sito WordPress non è raggiungibile o non ha REST API abilitata. Status: ${response.status}`);
+    }
+    
+    const data = await response.json();
+    console.log("Dati REST API WordPress:", data);
+    return true;
+  } catch (error) {
+    console.error("Errore connettività WordPress:", error);
+    throw new Error(`Impossibile connettersi al sito WordPress: ${error instanceof Error ? error.message : 'Errore sconosciuto'}`);
+  }
+};
+
+// Funzione per verificare i permessi utente con maggiori dettagli
+const checkUserPermissions = async (credentials: WordPressCredentials) => {
+  const { siteUrl, username, password } = credentials;
+  const cleanUrl = siteUrl.replace(/\/$/, '');
+  const apiUrl = `${cleanUrl}/wp-json/wp/v2/users/me`;
+  
+  console.log("Verificando permessi utente per:", username);
+  console.log("URL API utente:", apiUrl);
+  
+  // Verifica prima la connettività base
+  await checkWordPressSiteConnectivity(siteUrl);
+  
+  try {
+    const authHeader = 'Basic ' + btoa(`${username}:${password}`);
+    console.log("Header di autenticazione generato per utente:", username);
+    
+    const response = await fetch(apiUrl, {
+      method: 'GET',
+      headers: {
+        'Authorization': authHeader,
+        'Content-Type': 'application/json',
+      },
+    });
+
+    console.log("Risposta verifica utente:", response.status, response.statusText);
+
+    if (!response.ok) {
+      const errorData = await response.json().catch(() => ({}));
+      console.error("Dettagli errore autenticazione:", errorData);
+      
+      if (response.status === 401) {
+        throw new Error(`❌ ERRORE DI AUTENTICAZIONE (401):\n\nPossibili cause:\n• Username o password errati\n• Il sito richiede "Application Passwords" invece della password normale\n• Plugin di sicurezza che blocca l'accesso API\n• REST API disabilitata\n\nSoluzione consigliata:\n1. Vai su ${cleanUrl}/wp-admin/profile.php\n2. Scorri fino a "Application Passwords"\n3. Crea una nuova Application Password\n4. Usa quella password invece di quella normale\n\nDettagli: ${errorData.message || 'Accesso negato'}`);
+      } else if (response.status === 403) {
+        throw new Error(`❌ ACCESSO NEGATO (403):\n\nL'utente '${username}' non ha i permessi sufficienti.\nVerifica che l'utente abbia ruolo Administrator, Editor o Author.`);
+      } else if (response.status === 404) {
+        throw new Error(`❌ ENDPOINT NON TROVATO (404):\n\nIl sito WordPress non ha REST API disponibile o l'URL non è corretto.\nVerifica che l'URL sia: ${cleanUrl}`);
+      } else {
+        throw new Error(`❌ ERRORE ${response.status}: ${errorData.message || 'Errore sconosciuto nella verifica utente'}`);
+      }
     }
 
     const userData = await response.json();
-    console.log("Dati utente:", userData);
+    console.log("✅ Dati utente recuperati:", userData);
     
     const userRoles = userData.roles || [];
     const canPublish = userRoles.includes('administrator') || userRoles.includes('editor') || userRoles.includes('author');
     
+    console.log("Ruoli utente trovati:", userRoles);
+    console.log("Può pubblicare post:", canPublish);
+    
     if (!canPublish) {
-      throw new Error(`L'utente ${username} ha ruoli: ${userRoles.join(', ')}. Servono permessi di Administrator, Editor o Author per pubblicare post.`);
+      throw new Error(`❌ PERMESSI INSUFFICIENTI:\n\nL'utente '${username}' ha ruoli: ${userRoles.join(', ')}\n\nPer pubblicare post servono i ruoli:\n• Administrator\n• Editor  \n• Author\n\nContatta l'amministratore WordPress per aggiornare i permessi.`);
     }
     
+    console.log("✅ Verifica permessi completata con successo");
     return userData;
   } catch (error) {
-    console.error("Errore nella verifica permessi:", error);
+    console.error("❌ Errore nella verifica permessi:", error);
     throw error;
   }
 };
 
 export const getWordPressCategories = async (credentials: WordPressCredentials) => {
   const { siteUrl, username, password } = credentials;
-  const apiUrl = `${siteUrl.replace(/\/$/, '')}/wp-json/wp/v2/categories`;
+  const cleanUrl = siteUrl.replace(/\/$/, '');
+  const apiUrl = `${cleanUrl}/wp-json/wp/v2/categories`;
   
-  console.log("Recuperando categorie da:", apiUrl);
+  console.log("🔄 Recuperando categorie da:", apiUrl);
   
   try {
-    // Prima verifichiamo i permessi
-    await checkUserPermissions(credentials);
+    // Prima verifichiamo i permessi utente (include anche check connettività)
+    const userData = await checkUserPermissions(credentials);
+    console.log("✅ Utente verificato:", userData.name);
     
     const response = await fetch(apiUrl, {
       method: 'GET',
@@ -75,19 +132,20 @@ export const getWordPressCategories = async (credentials: WordPressCredentials) 
     });
 
     if (!response.ok) {
-      const errorData = await response.json();
-      throw new Error(`Errore HTTP ${response.status}: ${errorData.message || 'Errore nel recupero categorie'}`);
+      const errorData = await response.json().catch(() => ({}));
+      console.error("Errore recupero categorie:", errorData);
+      throw new Error(`❌ Errore nel recupero categorie (${response.status}): ${errorData.message || 'Errore sconosciuto'}`);
     }
 
     const categories = await response.json();
-    console.log("Categorie ricevute:", categories);
+    console.log("✅ Categorie recuperate:", categories.length, "categorie trovate");
     
     return categories.map((cat: any) => ({
       id: cat.id,
       name: cat.name
     }));
   } catch (error) {
-    console.error("Errore nel recupero delle categorie:", error);
+    console.error("❌ Errore nel recupero delle categorie:", error);
     throw error;
   }
 };
