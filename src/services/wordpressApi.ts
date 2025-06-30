@@ -170,16 +170,98 @@ const checkUserPermissions = async (credentials: WordPressCredentials) => {
     const { userData, headers } = await testAuthentication(credentials, apiEndpoint);
     
     const userRoles = userData.roles || [];
-    const canPublish = userRoles.includes('administrator') || userRoles.includes('editor') || userRoles.includes('author');
     
     console.log("👤 Dati utente:", {
       name: userData.name,
       roles: userRoles,
-      canPublish: canPublish
+      id: userData.id
     });
     
-    if (!canPublish) {
-      throw new Error(`❌ PERMESSI INSUFFICIENTI:\n\nL'utente '${credentials.username}' ha ruoli: ${userRoles.join(', ')}\n\nPer pubblicare post servono i ruoli:\n• Administrator\n• Editor  \n• Author\n\nContatta l'amministratore WordPress per aggiornare i permessi.`);
+    // Se i ruoli non sono disponibili tramite /users/me, proviamo con una richiesta diversa
+    if (userRoles.length === 0) {
+      console.log("⚠️ Ruoli non disponibili tramite /users/me, tentativo alternativo...");
+      
+      try {
+        // Proviamo a recuperare i ruoli dall'endpoint specifico dell'utente
+        const userResponse = await fetch(`${apiEndpoint}/users/${userData.id}`, {
+          method: 'GET',
+          headers: headers,
+        });
+
+        if (userResponse.ok) {
+          const detailedUserData = await userResponse.json();
+          const detailedRoles = detailedUserData.roles || [];
+          
+          console.log("🔍 Ruoli dall'endpoint dettagliato:", detailedRoles);
+          
+          if (detailedRoles.length > 0) {
+            userData.roles = detailedRoles;
+            userRoles.push(...detailedRoles);
+          }
+        }
+      } catch (error) {
+        console.log("⚠️ Impossibile recuperare ruoli dettagliati:", error);
+      }
+    }
+    
+    // Se ancora non abbiamo ruoli, proviamo a testare direttamente la capacità di creare post
+    if (userRoles.length === 0) {
+      console.log("🧪 Testando capacità di creazione post direttamente...");
+      
+      try {
+        // Tentiamo di creare una bozza di test
+        const testPostResponse = await fetch(`${apiEndpoint}/posts`, {
+          method: 'POST',
+          headers: headers,
+          body: JSON.stringify({
+            title: 'Test Draft - Please Ignore',
+            content: 'This is a test draft to verify publishing permissions.',
+            status: 'draft'
+          }),
+        });
+
+        if (testPostResponse.ok) {
+          console.log("✅ Test creazione post riuscito - permessi confermati");
+          
+          // Eliminiamo il post di test
+          const testPost = await testPostResponse.json();
+          try {
+            await fetch(`${apiEndpoint}/posts/${testPost.id}`, {
+              method: 'DELETE',
+              headers: headers,
+            });
+            console.log("🗑️ Post di test eliminato");
+          } catch (deleteError) {
+            console.log("⚠️ Impossibile eliminare post di test:", deleteError);
+          }
+          
+          console.log("✅ Verifica permessi completata con successo (test pratico)");
+          return { userData, apiEndpoint, headers };
+        } else {
+          const errorData = await testPostResponse.json();
+          console.log("❌ Test creazione post fallito:", errorData);
+          
+          if (testPostResponse.status === 403) {
+            throw new Error(`❌ PERMESSI INSUFFICIENTI:\n\nL'utente '${credentials.username}' non ha i permessi per creare post.\n\nVerifica che l'utente abbia uno dei seguenti ruoli:\n• Administrator\n• Editor\n• Author\n\nOppure controlla che l'Application Password sia stata generata correttamente.`);
+          }
+        }
+      } catch (testError) {
+        console.log("❌ Errore nel test di creazione post:", testError);
+        
+        // Se il test fallisce, procediamo comunque ma avvisiamo l'utente
+        console.log("⚠️ Impossibile verificare i permessi automaticamente");
+        
+        // Permettiamo la connessione ma avvisiamo sui permessi
+        console.log("✅ Connessione stabilita (permessi da verificare durante la pubblicazione)");
+        return { userData, apiEndpoint, headers };
+      }
+    }
+    
+    // Verifica tradizionale dei ruoli se disponibili
+    const canPublish = userRoles.includes('administrator') || userRoles.includes('editor') || userRoles.includes('author');
+    
+    if (userRoles.length > 0 && !canPublish) {
+      throw new Error(`❌ PERMESSI INSUFFICIENTI:\n\nL'utente '${credentials.username}' ha ruoli: ${userRoles.join(', ')}\n\nPer pubblicare post servono i ruoli:\n• Administrator\n• Editor\n• Author\n\nContatta l'amministratore WordPress per aggiornare i permessi.`);
     }
     
     console.log("✅ Verifica permessi completata con successo");
