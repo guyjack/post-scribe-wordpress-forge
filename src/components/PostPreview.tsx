@@ -1,92 +1,115 @@
 
-import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Eye, Calendar, Tag } from "lucide-react";
+import { Separator } from "@/components/ui/separator";
+import { Code2, Tag, Target, FileText } from "lucide-react";
 
 interface PostPreviewProps {
   post: {
     title: string;
     content: string;
     excerpt: string;
-    seoTitle: string;
-    metaDescription: string;
     tags: string[];
-    imageUrl: string;
+    aioseo?: {
+      articleTitle: string;
+      metaDescription: string;
+      focusKeyphrase: string;
+      tags: string[];
+    };
   };
 }
 
 const PostPreview = ({ post }: PostPreviewProps) => {
   return (
-    <div className="space-y-6">
-      {/* Immagine Featured */}
-      <div className="relative overflow-hidden rounded-lg">
-        <img 
-          src={post.imageUrl} 
-          alt={post.title}
-          className="w-full h-64 object-cover"
-        />
-        <div className="absolute inset-0 bg-black/20 flex items-end">
-          <div className="p-4 text-white">
-            <Badge variant="secondary" className="mb-2">
-              Immagine Generata
-            </Badge>
+    <div className="space-y-6 text-purple-300 font-mono">
+      {/* SEO Info Panel */}
+      {post.aioseo && (
+        <div className="border border-purple-500/30 bg-gray-900/30 rounded-lg p-4">
+          <div className="flex items-center gap-2 mb-4">
+            <Target className="h-4 w-4 text-purple-400" />
+            <span className="text-purple-400 font-bold">SEO.config</span>
+          </div>
+          
+          <div className="space-y-3 text-sm">
+            <div>
+              <span className="text-purple-500">articleTitle:</span>{' '}
+              <span className="text-yellow-400">"{post.aioseo.articleTitle}"</span>
+            </div>
+            <div>
+              <span className="text-purple-500">metaDescription:</span>{' '}
+              <span className="text-yellow-400">"{post.aioseo.metaDescription}"</span>
+            </div>
+            <div>
+              <span className="text-purple-500">focusKeyphrase:</span>{' '}
+              <span className="text-yellow-400">"{post.aioseo.focusKeyphrase}"</span>
+            </div>
+            <div className="flex flex-wrap gap-1 mt-2">
+              <span className="text-purple-500">tags:</span>{' '}
+              <span className="text-yellow-400">[</span>
+              {post.aioseo.tags.map((tag, index) => (
+                <span key={index} className="text-green-400">
+                  "{tag}"{index < post.aioseo!.tags.length - 1 ? ',' : ''}
+                </span>
+              ))}
+              <span className="text-yellow-400">]</span>
+            </div>
           </div>
         </div>
+      )}
+
+      {/* Post Title */}
+      <div>
+        <div className="flex items-center gap-2 mb-2">
+          <Code2 className="h-4 w-4 text-purple-400" />
+          <span className="text-purple-400 font-bold">post.title</span>
+        </div>
+        <h2 className="text-2xl font-bold text-purple-200 bg-gray-900/30 p-3 rounded border border-purple-500/20">
+          {post.title}
+        </h2>
       </div>
 
-      {/* Titolo e Meta */}
-      <div className="space-y-3">
-        <h2 className="text-2xl font-bold text-gray-900">{post.title}</h2>
-        <p className="text-gray-600 text-sm">{post.excerpt}</p>
-        
-        <div className="flex items-center gap-4 text-sm text-gray-500">
-          <div className="flex items-center gap-1">
-            <Calendar className="h-4 w-4" />
-            {new Date().toLocaleDateString('it-IT')}
-          </div>
-          <div className="flex items-center gap-1">
-            <Eye className="h-4 w-4" />
-            Anteprima
-          </div>
+      <Separator className="bg-purple-500/20" />
+
+      {/* Post Excerpt */}
+      <div>
+        <div className="flex items-center gap-2 mb-2">
+          <FileText className="h-4 w-4 text-purple-400" />
+          <span className="text-purple-400 font-bold">post.excerpt</span>
+        </div>
+        <p className="text-purple-300/80 bg-gray-900/30 p-3 rounded border border-purple-500/20">
+          {post.excerpt}
+        </p>
+      </div>
+
+      {/* Post Content Preview */}
+      <div>
+        <div className="flex items-center gap-2 mb-2">
+          <Code2 className="h-4 w-4 text-purple-400" />
+          <span className="text-purple-400 font-bold">post.content</span>
+        </div>
+        <div className="bg-gray-900/30 p-4 rounded border border-purple-500/20 max-h-96 overflow-y-auto">
+          <div 
+            className="prose prose-sm max-w-none text-purple-200 prose-headings:text-purple-300 prose-p:text-purple-200/90 prose-strong:text-purple-100 prose-a:text-blue-400"
+            dangerouslySetInnerHTML={{ __html: post.content }}
+          />
         </div>
       </div>
 
       {/* Tags */}
-      <div className="flex flex-wrap gap-2">
-        {post.tags.map((tag, index) => (
-          <Badge key={index} variant="outline" className="flex items-center gap-1">
-            <Tag className="h-3 w-3" />
-            {tag}
-          </Badge>
-        ))}
-      </div>
-
-      {/* Contenuto */}
-      <Card>
-        <CardContent className="pt-6">
-          <div 
-            className="prose max-w-none"
-            dangerouslySetInnerHTML={{ __html: post.content }}
-          />
-        </CardContent>
-      </Card>
-
-      {/* SEO Info */}
-      <Card className="bg-blue-50 border-blue-200">
-        <CardContent className="pt-6">
-          <h3 className="font-semibold mb-3 text-blue-900">Ottimizzazione SEO</h3>
-          <div className="space-y-2">
-            <div>
-              <strong className="text-blue-800">Titolo SEO:</strong>
-              <p className="text-blue-700">{post.seoTitle}</p>
-            </div>
-            <div>
-              <strong className="text-blue-800">Meta Description:</strong>
-              <p className="text-blue-700">{post.metaDescription}</p>
-            </div>
+      {post.tags && post.tags.length > 0 && (
+        <div>
+          <div className="flex items-center gap-2 mb-2">
+            <Tag className="h-4 w-4 text-purple-400" />
+            <span className="text-purple-400 font-bold">post.tags[]</span>
           </div>
-        </CardContent>
-      </Card>
+          <div className="flex flex-wrap gap-2">
+            {post.tags.map((tag, index) => (
+              <Badge key={index} variant="outline" className="border-purple-500/30 text-purple-300 bg-gray-900/30">
+                #{tag}
+              </Badge>
+            ))}
+          </div>
+        </div>
+      )}
     </div>
   );
 };

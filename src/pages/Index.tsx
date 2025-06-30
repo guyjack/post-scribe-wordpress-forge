@@ -7,7 +7,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { toast } from "sonner";
-import { Loader2, Send, Zap, Image, Eye } from "lucide-react";
+import { Loader2, Send, Terminal, Code, Database } from "lucide-react";
 import { generatePost } from "@/services/postGenerator";
 import { publishToWordPress } from "@/services/wordpressApi";
 import PostPreview from "@/components/PostPreview";
@@ -29,7 +29,7 @@ const Index = () => {
 
   const handleGeneratePost = async () => {
     if (!topic.trim()) {
-      toast.error("Inserisci un argomento per il post");
+      toast.error("$ error: topic argument required");
       return;
     }
 
@@ -38,10 +38,10 @@ const Index = () => {
       const post = await generatePost(topic);
       setGeneratedPost(post);
       setShowPreview(true);
-      toast.success("Post generato con successo!");
+      toast.success("✓ Post compiled successfully");
     } catch (error) {
       console.error("Errore nella generazione del post:", error);
-      toast.error("Errore nella generazione del post");
+      toast.error("✗ Compilation failed");
     } finally {
       setIsGenerating(false);
     }
@@ -49,118 +49,165 @@ const Index = () => {
 
   const handlePublishPost = async () => {
     if (!generatedPost || !credentials.siteUrl || !credentials.username || !credentials.password) {
-      toast.error("Compila tutti i campi necessari");
+      toast.error("$ error: missing required parameters");
       return;
     }
 
     setIsPublishing(true);
     try {
       await publishToWordPress(generatedPost, credentials, selectedCategory);
-      toast.success("Post pubblicato con successo su WordPress!");
+      toast.success("✓ Deployment successful");
     } catch (error) {
       console.error("Errore nella pubblicazione:", error);
-      toast.error("Errore nella pubblicazione del post");
+      toast.error("✗ Deployment failed");
     } finally {
       setIsPublishing(false);
     }
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50">
-      <div className="container mx-auto px-4 py-8">
-        <div className="text-center mb-8">
-          <h1 className="text-4xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent mb-4">
-            WordPress Post Generator
-          </h1>
-          <p className="text-xl text-gray-600 max-w-2xl mx-auto">
-            Genera automaticamente post ottimizzati per la SEO con immagini e pubblicali direttamente su WordPress
+    <div className="min-h-screen bg-gray-950 text-green-400 font-mono">
+      {/* Matrix-style background pattern */}
+      <div className="fixed inset-0 opacity-5 pointer-events-none">
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_50%,rgba(34,197,94,0.1),transparent)] animate-pulse"></div>
+        <div className="absolute inset-0 bg-[linear-gradient(0deg,transparent_24%,rgba(34,197,94,0.05)_25%,rgba(34,197,94,0.05)_26%,transparent_27%,transparent_74%,rgba(34,197,94,0.05)_75%,rgba(34,197,94,0.05)_76%,transparent_77%,transparent)] bg-[length:50px_50px]"></div>
+      </div>
+
+      <div className="container mx-auto px-4 py-8 relative z-10">
+        {/* Header con stile terminale */}
+        <div className="text-center mb-8 border border-green-500/30 bg-black/50 backdrop-blur-sm rounded-lg p-6">
+          <div className="flex items-center justify-center gap-2 mb-4">
+            <Terminal className="h-8 w-8 text-green-400" />
+            <h1 className="text-4xl font-bold text-green-400">
+              <span className="text-green-600">$</span> wp-post-generator
+            </h1>
+          </div>
+          <p className="text-lg text-green-300/80 max-w-2xl mx-auto font-mono">
+            <span className="text-green-600">//</span> Automated WordPress content generation system
+            <br />
+            <span className="text-green-600">//</span> SEO-optimized with AI-powered content creation
           </p>
+          <div className="mt-4 text-sm text-green-500/60">
+            <code>Status: Online | Version: 2.1.0 | Uptime: 99.9%</code>
+          </div>
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 max-w-6xl mx-auto">
           {/* Form di Generazione */}
-          <Card className="shadow-xl border-0 bg-white/80 backdrop-blur-sm">
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <Zap className="h-5 w-5 text-yellow-500" />
-                Genera Post
+          <Card className="border border-green-500/30 bg-black/50 backdrop-blur-sm text-green-400">
+            <CardHeader className="border-b border-green-500/20">
+              <CardTitle className="flex items-center gap-2 text-green-400">
+                <Code className="h-5 w-5" />
+                <span className="font-mono">function generatePost()</span>
               </CardTitle>
-              <CardDescription>
-                Inserisci l'argomento del post che vuoi generare
+              <CardDescription className="text-green-300/70 font-mono">
+                {'{'} Initialize content generation parameters {'}'}
               </CardDescription>
             </CardHeader>
-            <CardContent className="space-y-6">
+            <CardContent className="space-y-6 pt-6">
               <div className="space-y-2">
-                <Label htmlFor="topic">Argomento del Post</Label>
+                <Label htmlFor="topic" className="text-green-400 font-mono">
+                  const topic = <span className="text-yellow-400">"string"</span>
+                </Label>
                 <Textarea
                   id="topic"
-                  placeholder="Es: I benefici dello yoga per la salute mentale"
+                  placeholder="// Enter your topic here..."
                   value={topic}
                   onChange={(e) => setTopic(e.target.value)}
-                  className="min-h-[100px] resize-none"
+                  className="min-h-[100px] resize-none bg-gray-900/50 border-green-500/30 text-green-300 placeholder:text-green-500/50 font-mono"
                 />
               </div>
 
               <Button 
                 onClick={handleGeneratePost}
                 disabled={isGenerating || !topic.trim()}
-                className="w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 transition-all duration-300"
+                className="w-full bg-green-600 hover:bg-green-700 text-black font-mono font-bold border border-green-400"
               >
                 {isGenerating ? (
-                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  <>
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    <span>Compiling...</span>
+                  </>
                 ) : (
-                  <Zap className="mr-2 h-4 w-4" />
+                  <>
+                    <Terminal className="mr-2 h-4 w-4" />
+                    <span>$ ./generate --topic="{topic.slice(0, 20)}{topic.length > 20 ? '...' : ''}"</span>
+                  </>
                 )}
-                {isGenerating ? "Generando..." : "Genera Post"}
               </Button>
             </CardContent>
           </Card>
 
           {/* Credenziali WordPress */}
-          <WordPressCredentials 
-            credentials={credentials}
-            setCredentials={setCredentials}
-            categories={categories}
-            setCategories={setCategories}
-            selectedCategory={selectedCategory}
-            setSelectedCategory={setSelectedCategory}
-          />
+          <Card className="border border-blue-500/30 bg-black/50 backdrop-blur-sm text-blue-400">
+            <CardHeader className="border-b border-blue-500/20">
+              <CardTitle className="flex items-center gap-2 text-blue-400">
+                <Database className="h-5 w-5" />
+                <span className="font-mono">class WordPressAPI</span>
+              </CardTitle>
+              <CardDescription className="text-blue-300/70 font-mono">
+                {'{'} Configure database connection parameters {'}'}
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="pt-6">
+              <WordPressCredentials 
+                credentials={credentials}
+                setCredentials={setCredentials}
+                categories={categories}
+                setCategories={setCategories}
+                selectedCategory={selectedCategory}
+                setSelectedCategory={setSelectedCategory}
+              />
+            </CardContent>
+          </Card>
         </div>
 
         {/* Preview del Post */}
         {showPreview && generatedPost && (
           <div className="mt-8 max-w-6xl mx-auto">
-            <Card className="shadow-xl border-0 bg-white/80 backdrop-blur-sm">
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <Eye className="h-5 w-5 text-green-500" />
-                  Anteprima Post
+            <Card className="border border-purple-500/30 bg-black/50 backdrop-blur-sm text-purple-400">
+              <CardHeader className="border-b border-purple-500/20">
+                <CardTitle className="flex items-center gap-2 text-purple-400">
+                  <Code className="h-5 w-5" />
+                  <span className="font-mono">Preview.render()</span>
                 </CardTitle>
-                <CardDescription>
-                  Controlla il contenuto generato prima della pubblicazione
+                <CardDescription className="text-purple-300/70 font-mono">
+                  {'{'} Generated content ready for deployment {'}'}
                 </CardDescription>
               </CardHeader>
-              <CardContent>
+              <CardContent className="pt-6">
                 <PostPreview post={generatedPost} />
                 
                 <div className="mt-6 flex justify-center">
                   <Button 
                     onClick={handlePublishPost}
                     disabled={isPublishing || !credentials.siteUrl}
-                    className="bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 transition-all duration-300"
+                    className="bg-purple-600 hover:bg-purple-700 text-white font-mono font-bold border border-purple-400 px-8"
                   >
                     {isPublishing ? (
-                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                      <>
+                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                        <span>Deploying...</span>
+                      </>
                     ) : (
-                      <Send className="mr-2 h-4 w-4" />
+                      <>
+                        <Send className="mr-2 h-4 w-4" />
+                        <span>$ ./deploy --target=wordpress</span>
+                      </>
                     )}
-                    {isPublishing ? "Pubblicando..." : "Pubblica su WordPress"}
                   </Button>
                 </div>
               </CardContent>
             </Card>
           </div>
         )}
+
+        {/* Footer con stile terminale */}
+        <div className="mt-12 text-center text-green-500/50 font-mono text-sm">
+          <div className="border-t border-green-500/20 pt-4">
+            <code>© 2024 WP-Post-Generator | Built with React + TypeScript + AI</code>
+          </div>
+        </div>
       </div>
     </div>
   );
