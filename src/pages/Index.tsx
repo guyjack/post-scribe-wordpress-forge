@@ -12,6 +12,7 @@ import { generatePost } from "@/services/postGenerator";
 import { publishToWordPress } from "@/services/wordpressApi";
 import PostPreview from "@/components/PostPreview";
 import WordPressCredentials from "@/components/WordPressCredentials";
+import SavedWordPressSites from "@/components/SavedWordPressSites";
 
 const Index = () => {
   const [topic, setTopic] = useState("");
@@ -66,6 +67,14 @@ const Index = () => {
     }
   };
 
+  const handleSiteSelected = (site: { siteUrl: string; username: string; password: string }) => {
+    setCredentials({
+      siteUrl: site.siteUrl,
+      username: site.username,
+      password: site.password
+    });
+  };
+
   return (
     <div className="min-h-screen bg-gray-950 text-green-400 font-mono">
       {/* Matrix-style background pattern */}
@@ -93,7 +102,7 @@ const Index = () => {
           </div>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 max-w-6xl mx-auto">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 max-w-7xl mx-auto">
           {/* Form di Generazione */}
           <Card className="border border-green-500/30 bg-black/50 backdrop-blur-sm text-green-400">
             <CardHeader className="border-b border-green-500/20">
@@ -158,6 +167,9 @@ const Index = () => {
             </CardContent>
           </Card>
 
+          {/* Siti WordPress Salvati */}
+          <SavedWordPressSites onSiteSelected={handleSiteSelected} />
+
           {/* Credenziali WordPress */}
           <Card className="border border-blue-500/30 bg-black/50 backdrop-blur-sm text-blue-400">
             <CardHeader className="border-b border-blue-500/20">
@@ -184,7 +196,7 @@ const Index = () => {
 
         {/* Preview del Post */}
         {showPreview && generatedPost && (
-          <div className="mt-8 max-w-6xl mx-auto">
+          <div className="mt-8 max-w-7xl mx-auto">
             <Card className="border border-purple-500/30 bg-black/50 backdrop-blur-sm text-purple-400">
               <CardHeader className="border-b border-purple-500/20">
                 <CardTitle className="flex items-center gap-2 text-purple-400">

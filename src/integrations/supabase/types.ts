@@ -9,13 +9,49 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
-      [_ in never]: never
+      wordpress_sites: {
+        Row: {
+          created_at: string
+          id: string
+          name: string
+          password: string
+          site_url: string
+          updated_at: string
+          username: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          name: string
+          password: string
+          site_url: string
+          updated_at?: string
+          username: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          name?: string
+          password?: string
+          site_url?: string
+          updated_at?: string
+          username?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      encrypt_password: {
+        Args: { password_text: string }
+        Returns: string
+      }
+      verify_password: {
+        Args: { password_text: string; hashed_password: string }
+        Returns: boolean
+      }
     }
     Enums: {
       [_ in never]: never
