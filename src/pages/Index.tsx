@@ -15,6 +15,7 @@ import WordPressCredentials from "@/components/WordPressCredentials";
 
 const Index = () => {
   const [topic, setTopic] = useState("");
+  const [writingStyle, setWritingStyle] = useState("professionale");
   const [credentials, setCredentials] = useState({
     siteUrl: "",
     username: "",
@@ -35,7 +36,7 @@ const Index = () => {
 
     setIsGenerating(true);
     try {
-      const post = await generatePost(topic);
+      const post = await generatePost(topic, writingStyle);
       setGeneratedPost(post);
       setShowPreview(true);
       toast.success("✓ Post compiled successfully");
@@ -116,6 +117,25 @@ const Index = () => {
                   onChange={(e) => setTopic(e.target.value)}
                   className="min-h-[100px] resize-none bg-gray-900/50 border-green-500/30 text-green-300 placeholder:text-green-500/50 font-mono"
                 />
+              </div>
+
+              <div className="space-y-2">
+                <Label className="text-green-400 font-mono">
+                  const writingStyle = <span className="text-yellow-400">"option"</span>
+                </Label>
+                <Select value={writingStyle} onValueChange={setWritingStyle}>
+                  <SelectTrigger className="bg-gray-900/50 border-green-500/30 text-green-300 font-mono">
+                    <SelectValue placeholder="// select writing style" />
+                  </SelectTrigger>
+                  <SelectContent className="bg-gray-900 border-green-500/30 text-green-300">
+                    <SelectItem value="professionale">Professionale - Stile business formale</SelectItem>
+                    <SelectItem value="tecnico">Tecnico - Linguaggio specialistico</SelectItem>
+                    <SelectItem value="divulgativo">Divulgativo - Facile comprensione</SelectItem>
+                    <SelectItem value="accademico">Accademico - Stile scientifico</SelectItem>
+                    <SelectItem value="informale">Informale - Tono conversazionale</SelectItem>
+                    <SelectItem value="vendita">Vendita - Copy persuasivo</SelectItem>
+                  </SelectContent>
+                </Select>
               </div>
 
               <Button 

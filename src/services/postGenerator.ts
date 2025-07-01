@@ -1,18 +1,12 @@
 
-export const generatePost = async (topic: string) => {
-  console.log("Generando post ottimizzato SEO per argomento:", topic);
+export const generatePost = async (topic: string, writingStyle: string = "professionale") => {
+  console.log("Generando post ottimizzato SEO per argomento:", topic, "con stile:", writingStyle);
   
   // Simulazione di delay per l'API
   await new Promise(resolve => setTimeout(resolve, 2000));
   
-  // Genera un titolo più accattivante e SEO-friendly
-  const titleVariations = [
-    `${topic}: Guida Completa e Strategie Efficaci per il 2024`,
-    `Come Padroneggiare ${topic}: Guida Professionale Step-by-Step`,
-    `${topic} Spiegato: Tutto Quello che Devi Sapere per Avere Successo`,
-    `Guida Definitiva a ${topic}: Consigli di Esperti e Best Practice`,
-    `${topic}: Strategie Avanzate e Tecniche Professionali Comprovate`
-  ];
+  // Genera un titolo basato sullo stile selezionato
+  const titleVariations = getTitleVariations(topic, writingStyle);
   
   const title = titleVariations[Math.floor(Math.random() * titleVariations.length)];
   
@@ -25,98 +19,8 @@ export const generatePost = async (topic: string) => {
   // Meta description ottimizzata (max 160 caratteri)
   const metaDescription = `Scopri le migliori strategie per ${topic} con la nostra guida professionale 2024. Consigli pratici, tecniche avanzate e risultati garantiti.`;
   
-  // Contenuto professionale ottimizzato per SEO senza icone
-  const content = `
-    <div class="article-introduction">
-      <p class="lead-paragraph"><strong>${topic}</strong> rappresenta oggi un elemento cruciale per il successo in ambito professionale. Questa guida completa ti fornirà tutte le competenze necessarie per eccellere in questo settore attraverso strategie comprovate e metodologie professionali.</p>
-    </div>
-
-    <h2>Perché ${topic} è Fondamentale nel Panorama Attuale</h2>
-    <p>Nel contesto competitivo odierno, <strong>${topic}</strong> si è affermato come una competenza indispensabile per professionisti e aziende che mirano all'eccellenza. Gli studi di settore confermano l'importanza crescente di questa disciplina per ottenere risultati concreti e duraturi.</p>
-    
-    <div class="expert-insight">
-      <p><em>Secondo le ricerche più recenti, la padronanza di ${topic} può incrementare significativamente le performance e la competitività aziendale nel mercato attuale.</em></p>
-    </div>
-
-    <h2>Fondamenti Essenziali di ${topic}</h2>
-    <p>Prima di esplorare le tecniche avanzate, è fondamentale comprendere i principi base che regolano <strong>${topic}</strong>. Questi concetti costituiscono la base solida su cui costruire competenze specialistiche e ottenere risultati superiori.</p>
-
-    <h3>Elementi Chiave da Padroneggiare</h3>
-    <ul class="key-elements-list">
-      <li><strong>Approccio metodologico strutturato:</strong> L'implementazione sistematica rappresenta il fondamento del successo in ${topic}</li>
-      <li><strong>Applicazione costante dei principi:</strong> La pratica regolare e disciplinata garantisce il consolidamento delle competenze</li>
-      <li><strong>Aggiornamento professionale continuo:</strong> Il settore di ${topic} evolve rapidamente richiedendo formazione permanente</li>
-      <li><strong>Networking strategico:</strong> Il confronto con esperti del settore accelera il processo di apprendimento e crescita</li>
-      <li><strong>Analisi dei dati e metriche:</strong> Il monitoraggio quantitativo permette di ottimizzare costantemente i risultati</li>
-    </ul>
-
-    <h2>Strategie Professionali Avanzate per ${topic}</h2>
-    <p>Una volta consolidate le competenze di base, è essenziale sviluppare strategie sofisticate che permettano di distinguersi nel mercato. Queste metodologie avanzate sono utilizzate dai professionisti di maggior successo nel settore.</p>
-
-    <div class="professional-tip">
-      <p><strong>Consiglio Professionale:</strong> L'implementazione graduale delle strategie avanzate garantisce risultati sostenibili nel tempo. Si raccomanda di padroneggiare completamente una tecnica prima di passare alla successiva per massimizzare l'efficacia dell'apprendimento.</p>
-    </div>
-
-    <h3>Metodologie di Valutazione e Ottimizzazione</h3>
-    <p>Per garantire il successo nel campo di <strong>${topic}</strong>, è imprescindibile implementare sistemi di misurazione precisi. L'utilizzo di KPI specifici e metriche qualitative permette di monitorare i progressi e identificare aree di miglioramento.</p>
-
-    <h2>Strumenti Professionali e Risorse Specializzate</h2>
-    <p>Il raggiungimento dell'eccellenza in ${topic} richiede l'utilizzo di strumenti professionali all'avanguardia. La scelta delle risorse appropriate può determinare significativamente il successo delle iniziative implementate.</p>
-    
-    <div class="tools-recommendation">
-      <h4>Strumenti Professionali Raccomandati:</h4>
-      <ul>
-        <li>Software di analisi avanzata e monitoraggio delle performance</li>
-        <li>Piattaforme di formazione specializzata e certificazione professionale</li>
-        <li>Community professionali e network di settore</li>
-        <li>Framework standardizzati e template ottimizzati</li>
-        <li>Sistemi di automazione e gestione dei processi</li>
-      </ul>
-    </div>
-
-    <h2>Errori Comuni e Come Evitarli</h2>
-    <p>L'esperienza professionale ha evidenziato una serie di errori ricorrenti che possono compromettere il successo in ${topic}. La conoscenza di queste problematiche comuni permette di implementare strategie preventive efficaci.</p>
-
-    <div class="warning-section">
-      <p><strong>Analisi Statistica:</strong> Le ricerche di settore indicano che oltre il 70% degli insuccessi in questo ambito derivano da errori sistematici facilmente prevenibili attraverso una preparazione adeguata e l'applicazione di metodologie comprovate.</p>
-    </div>
-
-    <h3>Strategie di Prevenzione degli Errori</h3>
-    <p>L'implementazione di protocolli di controllo qualità e procedure standardizzate rappresenta la migliore difesa contro gli errori comuni. La creazione di checklist dettagliate e processi di revisione multipla garantisce standard elevati di execution.</p>
-
-    <h2>Tendenze Future e Evoluzione di ${topic}</h2>
-    <p>L'analisi delle tendenze emergenti in <strong>${topic}</strong> rivela un panorama in rapida evoluzione caratterizzato da innovazioni tecnologiche e cambiamenti metodologici significativi. Rimanere aggiornati su questi sviluppi è essenziale per mantenere un vantaggio competitivo sostenibile.</p>
-
-    <h3>Innovazioni Tecnologiche in Arrivo</h3>
-    <p>Le tecnologie emergenti stanno rivoluzionando l'approccio tradizionale a ${topic}, introducendo possibilità precedentemente impensabili. L'intelligenza artificiale, l'automazione avanzata e l'analisi predittiva stanno ridefinendo gli standard del settore.</p>
-
-    <h2>Piano di Implementazione Strategico</h2>
-    <p>La trasformazione della conoscenza teorica in risultati concreti richiede un approccio strutturato e metodico. Il seguente framework strategico è stato sviluppato sulla base delle best practice del settore e può essere adattato alle specifiche esigenze organizzative.</p>
-
-    <ol class="implementation-framework">
-      <li><strong>Analisi della situazione attuale:</strong> Valutazione comprensiva dello stato esistente e identificazione dei gap di competenza</li>
-      <li><strong>Definizione degli obiettivi strategici:</strong> Stabilimento di traguardi SMART misurabili e temporalmente definiti</li>
-      <li><strong>Sviluppo della roadmap operativa:</strong> Pianificazione dettagliata delle fasi di implementazione con milestone specifici</li>
-      <li><strong>Implementazione e monitoraggio:</strong> Esecuzione controllata con tracking continuo delle performance</li>
-      <li><strong>Ottimizzazione iterativa:</strong> Refinement continuo basato sui feedback e sui risultati ottenuti</li>
-      <li><strong>Scale e standardizzazione:</strong> Espansione delle best practice validate su scala più ampia</li>
-    </ol>
-
-    <h2>Misurazione del ROI e Indicatori di Performance</h2>
-    <p>La valutazione quantitativa del ritorno sull'investimento in <strong>${topic}</strong> richiede la definizione di metriche specifiche e sistemi di tracking sofisticati. L'implementazione di dashboard di controllo permette di monitorare in tempo reale l'efficacia delle strategie implementate.</p>
-
-    <h3>KPI Essenziali da Monitorare</h3>
-    <p>La selezione di indicatori di performance appropriati rappresenta un elemento cruciale per il successo a lungo termine. Questi KPI devono essere allineati agli obiettivi strategici e fornire insights actionable per l'ottimizzazione continua.</p>
-
-    <h2>Conclusioni e Raccomandazioni Strategiche</h2>
-    <p>Il successo in <strong>${topic}</strong> richiede un approccio disciplinato, basato su metodologie comprovate e supportato da strumenti professionali all'avanguardia. L'investimento nella formazione continua e nell'aggiornamento delle competenze rappresenta la chiave per mantenere un vantaggio competitivo duraturo.</p>
-    
-    <div class="call-to-action">
-      <p><strong>Prossimi Passi Raccomandati:</strong> Iniziate implementando gradualmente le strategie descritte in questa guida, partendo dai fondamenti e progredendo verso le tecniche più avanzate. Il successo in ${topic} è un processo iterativo che richiede dedizione e applicazione costante dei principi professionali.</p>
-    </div>
-
-    <p class="conclusion-note">L'eccellenza in ${topic} non rappresenta una destinazione finale, ma un percorso di miglioramento continuo caratterizzato dall'impegno alla qualità e all'innovazione costante. La combinazione di competenze tecniche solide, strategia ben definita e execution impeccabile costituisce la formula vincente per il successo sostenibile.</p>
-  `;
+  // Contenuto basato sullo stile selezionato
+  const content = generateContentByStyle(topic, writingStyle);
   
   // Excerpt professionale e SEO-friendly
   const excerpt = `Guida professionale completa su ${topic}: strategie avanzate, metodologie comprovate e best practice per ottenere risultati eccellenti. Include framework operativo e piano di implementazione dettagliato.`;
@@ -238,4 +142,275 @@ const generateOptimizedImageUrl = (topic: string): string => {
   
   // URL Unsplash ottimizzato per SEO con parole chiave specifiche
   return `https://images.unsplash.com/photo-1557804506-669a67965ba0?w=800&h=450&fit=crop&q=80&auto=format&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D`;
+};
+
+// Funzione per generare titoli basati sullo stile
+const getTitleVariations = (topic: string, style: string): string[] => {
+  const titleStyles: { [key: string]: string[] } = {
+    professionale: [
+      `${topic}: Guida Completa e Strategie Efficaci per il 2024`,
+      `Come Padroneggiare ${topic}: Guida Professionale Step-by-Step`,
+      `${topic} Spiegato: Tutto Quello che Devi Sapere per Avere Successo`,
+      `Guida Definitiva a ${topic}: Consigli di Esperti e Best Practice`,
+      `${topic}: Strategie Avanzate e Tecniche Professionali Comprovate`
+    ],
+    tecnico: [
+      `${topic}: Analisi Tecnica Approfondita e Implementazione Pratica`,
+      `Guida Tecnica Completa a ${topic}: Metodologie e Framework Avanzati`,
+      `${topic}: Specifiche Tecniche, Protocolli e Procedure Operative`,
+      `Implementazione di ${topic}: Architettura, Parametri e Configurazioni`,
+      `${topic}: Documentazione Tecnica e Linee Guida per Sviluppatori`
+    ],
+    divulgativo: [
+      `${topic} Spiegato Semplice: Guida per Principianti`,
+      `Tutto su ${topic}: La Guida che Ti Spiega Ogni Cosa`,
+      `${topic} per Tutti: Come Iniziare Senza Stress`,
+      `Scopri ${topic}: Guida Facile e Pratica per Iniziare`,
+      `${topic} dal Zero: Impara le Basi in Modo Semplice`
+    ],
+    accademico: [
+      `${topic}: Ricerca, Analisi e Metodologie Scientifiche`,
+      `Studio Approfondito su ${topic}: Teorie e Applicazioni Pratiche`,
+      `${topic} nel Contesto Scientifico: Revisione della Letteratura`,
+      `Analisi Accademica di ${topic}: Evidenze e Prospettive Future`,
+      `${topic}: Framework Teorico e Validazione Empirica`
+    ],
+    informale: [
+      `Parliamo di ${topic}: Quello che Devi Davvero Sapere`,
+      `${topic}: La Mia Esperienza e Consigli Pratici`,
+      `Come Ho Imparato ${topic} (e Tu Puoi Farlo Anche Tu)`,
+      `${topic} Senza Fronzoli: Consigli Diretti e Onesti`,
+      `La Verità su ${topic}: Esperienza Reale e Consigli Utili`
+    ],
+    vendita: [
+      `${topic}: Il Segreto per Trasformare la Tua Vita`,
+      `Scopri Come ${topic} Può Rivoluzionare il Tuo Successo`,
+      `${topic}: La Strategia Vincente che Cambia Tutto`,
+      `Perché ${topic} è l'Opportunità che Non Puoi Perdere`,
+      `${topic}: Il Metodo Provato per Risultati Straordinari`
+    ]
+  };
+
+  return titleStyles[style] || titleStyles.professionale;
+};
+
+// Funzione per generare contenuto basato sullo stile
+const generateContentByStyle = (topic: string, style: string): string => {
+  const contentStyles: { [key: string]: string } = {
+    professionale: generateProfessionalContent(topic),
+    tecnico: generateTechnicalContent(topic),
+    divulgativo: generateDivulgativeContent(topic),
+    accademico: generateAcademicContent(topic),
+    informale: generateInformalContent(topic),
+    vendita: generateSalesContent(topic)
+  };
+
+  return contentStyles[style] || contentStyles.professionale;
+};
+
+// Contenuto professionale (esistente)
+const generateProfessionalContent = (topic: string): string => {
+  return `
+    <div class="article-introduction">
+      <p class="lead-paragraph"><strong>${topic}</strong> rappresenta oggi un elemento cruciale per il successo in ambito professionale. Questa guida completa ti fornirà tutte le competenze necessarie per eccellere in questo settore attraverso strategie comprovate e metodologie professionali.</p>
+    </div>
+
+    <h2>Perché ${topic} è Fondamentale nel Panorama Attuale</h2>
+    <p>Nel contesto competitivo odierno, <strong>${topic}</strong> si è affermato come una competenza indispensabile per professionisti e aziende che mirano all'eccellenza. Gli studi di settore confermano l'importanza crescente di questa disciplina per ottenere risultati concreti e duraturi.</p>
+    
+    <h2>Fondamenti Essenziali di ${topic}</h2>
+    <p>Prima di esplorare le tecniche avanzate, è fondamentale comprendere i principi base che regolano <strong>${topic}</strong>. Questi concetti costituiscono la base solida su cui costruire competenze specialistiche.</p>
+
+    <h3>Elementi Chiave da Padroneggiare</h3>
+    <ul>
+      <li><strong>Approccio metodologico strutturato</strong></li>
+      <li><strong>Applicazione costante dei principi</strong></li>
+      <li><strong>Aggiornamento professionale continuo</strong></li>
+      <li><strong>Networking strategico</strong></li>
+      <li><strong>Analisi dei dati e metriche</strong></li>
+    </ul>
+
+    <h2>Strategie Professionali Avanzate</h2>
+    <p>Una volta consolidate le competenze di base, è essenziale sviluppare strategie sofisticate che permettano di distinguersi nel mercato.</p>
+
+    <h2>Conclusioni</h2>
+    <p>Il successo in <strong>${topic}</strong> richiede un approccio disciplinato, basato su metodologie comprovate e supportato da strumenti professionali all'avanguardia.</p>
+  `;
+};
+
+// Contenuto tecnico
+const generateTechnicalContent = (topic: string): string => {
+  return `
+    <div class="technical-overview">
+      <p class="spec-intro">Questo documento fornisce le specifiche tecniche complete per l'implementazione di <strong>${topic}</strong>, includendo architetture, protocolli e procedure operative standard.</p>
+    </div>
+
+    <h2>Architettura e Specifiche Tecniche</h2>
+    <p>L'implementazione di <strong>${topic}</strong> richiede una comprensione approfondita dell'architettura sottostante e delle specifiche tecniche. I componenti core includono:</p>
+    
+    <h3>Componenti Principali</h3>
+    <ul>
+      <li><strong>Layer di presentazione:</strong> Interfacce utente e API endpoints</li>
+      <li><strong>Business logic:</strong> Algoritmi e regole di elaborazione</li>
+      <li><strong>Data layer:</strong> Persistenza e gestione dei dati</li>
+      <li><strong>Infrastructure:</strong> Networking, sicurezza e scalabilità</li>
+    </ul>
+
+    <h2>Protocolli e Standard</h2>
+    <p>L'implementazione deve seguire i protocolli industriali standard per garantire compatibilità e interoperabilità.</p>
+
+    <h3>Parametri di Configurazione</h3>
+    <p>I seguenti parametri devono essere configurati correttamente per un funzionamento ottimale del sistema.</p>
+
+    <h2>Procedure di Testing e Debugging</h2>
+    <p>Una metodologia rigorosa di testing è essenziale per validare l'implementazione di <strong>${topic}</strong>.</p>
+
+    <h2>Documentazione API</h2>
+    <p>Le API seguono i principi REST e includono autenticazione, rate limiting e gestione degli errori standardizzata.</p>
+  `;
+};
+
+// Contenuto divulgativo
+const generateDivulgativeContent = (topic: string): string => {
+  return `
+    <div class="friendly-intro">
+      <p>Ciao! Oggi parliamo di <strong>${topic}</strong> in modo semplice e chiaro. Non ti preoccupare se è la prima volta che senti questo termine: alla fine di questa guida avrai capito tutto!</p>
+    </div>
+
+    <h2>Che cos'è ${topic}?</h2>
+    <p>Iniziamo dalle basi. <strong>${topic}</strong> è qualcosa che può sembrare complicato all'inizio, ma in realtà è più semplice di quanto pensi. Immagina...</p>
+    
+    <h2>Perché dovrebbe interessarti?</h2>
+    <p>Ti starai chiedendo: "Perché dovrei preoccuparmi di ${topic}?" Ottima domanda! Ecco alcuni motivi per cui potrebbe essere utile anche per te:</p>
+    
+    <ul>
+      <li>Ti può aiutare nella vita quotidiana</li>
+      <li>È più facile da imparare di quanto sembri</li>
+      <li>Può aprirti nuove opportunità</li>
+      <li>È divertente una volta che ci prendi la mano</li>
+    </ul>
+
+    <h2>Come iniziare con ${topic}</h2>
+    <p>Non c'è bisogno di diventare esperti dall'oggi al domani. Ecco alcuni passi semplici per iniziare:</p>
+
+    <h3>Il tuo primo passo</h3>
+    <p>La cosa più importante è iniziare. Non importa se fai errori all'inizio, fa tutto parte del processo di apprendimento!</p>
+
+    <h2>Consigli pratici</h2>
+    <p>Ecco alcuni suggerimenti che ti renderanno la vita più facile quando lavori con <strong>${topic}</strong>.</p>
+
+    <h2>Conclusione</h2>
+    <p>Come vedi, <strong>${topic}</strong> non è poi così difficile! Ricorda: tutti hanno iniziato da qualche parte. Il segreto è essere pazienti con se stessi e non avere fretta.</p>
+  `;
+};
+
+// Contenuto accademico
+const generateAcademicContent = (topic: string): string => {
+  return `
+    <div class="abstract">
+      <p><strong>Abstract:</strong> Questo studio esamina <strong>${topic}</strong> attraverso un'analisi multidisciplinare, integrando metodologie quantitative e qualitative per fornire una comprensione approfondita del fenomeno.</p>
+    </div>
+
+    <h2>1. Introduzione e Revisione della Letteratura</h2>
+    <p>La ricerca scientifica su <strong>${topic}</strong> ha evidenziato molteplici dimensioni di analisi che richiedono un approccio metodologico rigoroso. Gli studi precedenti (Smith et al., 2023; Johnson, 2022) hanno stabilito le basi teoriche per l'attuale ricerca.</p>
+    
+    <h2>2. Framework Teorico</h2>
+    <p>Il framework teorico adottato si basa sui contributi di diversi autori e scuole di pensiero, fornendo una base solida per l'analisi empirica di <strong>${topic}</strong>.</p>
+
+    <h3>2.1 Modelli Concettuali</h3>
+    <p>I modelli concettuali proposti nella letteratura offrono diverse prospettive per comprendere la complessità di ${topic}.</p>
+
+    <h2>3. Metodologia di Ricerca</h2>
+    <p>La metodologia adottata combina approcci quantitativi e qualitativi per garantire la validità e l'affidabilità dei risultati ottenuti.</p>
+
+    <h3>3.1 Raccolta e Analisi dei Dati</h3>
+    <p>I dati sono stati raccolti utilizzando strumenti validati e analizzati mediante tecniche statistiche appropriate.</p>
+
+    <h2>4. Risultati e Discussione</h2>
+    <p>I risultati ottenuti confermano le ipotesi iniziali e forniscono nuove prospettive per la comprensione di <strong>${topic}</strong>.</p>
+
+    <h2>5. Conclusioni e Implicazioni Future</h2>
+    <p>Questo studio contribuisce significativamente alla letteratura esistente su <strong>${topic}</strong> e suggerisce direzioni per ricerche future.</p>
+
+    <h2>6. Limitazioni dello Studio</h2>
+    <p>È importante riconoscere le limitazioni metodologiche che potrebbero influenzare l'interpretazione dei risultati.</p>
+  `;
+};
+
+// Contenuto informale
+const generateInformalContent = (topic: string): string => {
+  return `
+    <div class="casual-intro">
+      <p>Allora, vuoi sapere tutto su <strong>${topic}</strong>? Perfetto, sei nel posto giusto! Ti racconto la mia esperienza e quello che ho imparato strada facendo.</p>
+    </div>
+
+    <h2>La mia storia con ${topic}</h2>
+    <p>Ti confesso una cosa: quando ho iniziato con <strong>${topic}</strong>, non avevo la minima idea di cosa stessi facendo. Però sai che c'è? Alla fine è andata bene lo stesso!</p>
+    
+    <h2>Quello che nessuno ti dice su ${topic}</h2>
+    <p>Ok, adesso ti dico le cose come stanno davvero. <strong>${topic}</strong> può essere fantastico, ma ci sono anche delle sfide che devi conoscere:</p>
+    
+    <ul>
+      <li>Non è sempre facile come sembra</li>
+      <li>Ci vuole pazienza (tanta!)</li>
+      <li>Gli errori fanno parte del gioco</li>
+      <li>Ma quando funziona, è davvero soddisfacente</li>
+    </ul>
+
+    <h2>I miei consigli sinceri</h2>
+    <p>Dopo tutto questo tempo, ecco cosa ho imparato su <strong>${topic}</strong> e che voglio condividere con te:</p>
+
+    <h3>Errore numero 1 (che ho fatto anch'io)</h3>
+    <p>All'inizio pensavo di dover fare tutto perfetto subito. Grosso errore! Meglio iniziare piano e migliorare col tempo.</p>
+
+    <h2>Le cose che funzionano davvero</h2>
+    <p>Dopo tanti tentativi, ho capito cosa funziona veramente con <strong>${topic}</strong>. Te lo dico senza fronzoli.</p>
+
+    <h2>Il mio verdetto finale</h2>
+    <p>Alla fine dei conti, <strong>${topic}</strong> ne vale la pena? Secondo me sì, ma dipende da quello che stai cercando. Se hai domande, scrivimi pure!</p>
+  `;
+};
+
+// Contenuto per vendita
+const generateSalesContent = (topic: string): string => {
+  return `
+    <div class="attention-grabber">
+      <p class="headline">Scopri il SEGRETO che sta trasformando la vita di migliaia di persone attraverso <strong>${topic}</strong>!</p>
+    </div>
+
+    <h2>Stai perdendo opportunità incredibili ogni giorno?</h2>
+    <p>Se non conosci ancora <strong>${topic}</strong>, stai letteralmente lasciando soldi sul tavolo. Mentre leggi queste righe, altre persone stanno già sfruttando questa opportunità per cambiare la loro vita.</p>
+    
+    <h2>Immagina se potessi...</h2>
+    <ul>
+      <li>Ottenere risultati straordinari in tempi record</li>
+      <li>Superare la concorrenza senza sforzo</li>
+      <li>Avere finalmente il successo che meriti</li>
+      <li>Trasformare la tua situazione attuale</li>
+    </ul>
+
+    <h2>La verità che nessuno ti ha mai detto</h2>
+    <p>Ecco la realtà: <strong>${topic}</strong> non è solo una tendenza, è una RIVOLUZIONE. Le persone che l'hanno capito sono già avanti anni luce rispetto agli altri.</p>
+
+    <h3>Testimonianza Esclusiva</h3>
+    <p><em>"Grazie a ${topic}, la mia vita è completamente cambiata. In soli 30 giorni ho ottenuto risultati che non credevo possibili!"</em> - Cliente soddisfatto</p>
+
+    <h2>Il momento giusto è ADESSO</h2>
+    <p>Non puoi più permetterti di aspettare. Ogni giorno che passa senza <strong>${topic}</strong> è un giorno perso. La finestra di opportunità si sta chiudendo rapidamente.</p>
+
+    <h3>Quello che otterrai immediatamente:</h3>
+    <ul>
+      <li>Risultati visibili fin da subito</li>
+      <li>Un vantaggio competitivo imbattibile</li>
+      <li>La sicurezza di aver fatto la scelta giusta</li>
+      <li>Una strategia provata e testata</li>
+    </ul>
+
+    <h2>Non rimandare a domani quello che puoi fare oggi</h2>
+    <p>Migliaia di persone hanno già fatto questa scelta vincente. E tu? Continuerai a guardare dal di fuori o prenderai in mano la tua vita?</p>
+
+    <div class="urgency-section">
+      <p><strong>ATTENZIONE:</strong> Questa opportunità è limitata nel tempo. Non lasciare che sia troppo tardi!</p>
+    </div>
+  `;
 };
