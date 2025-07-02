@@ -139,7 +139,7 @@ const WordPressCredentials = ({
           </Label>
           <Select value={selectedCategory} onValueChange={setSelectedCategory}>
             <SelectTrigger className="bg-gray-900/50 border-blue-500/30 text-blue-300 font-mono">
-              <SelectValue placeholder="// select category" />
+              <SelectValue placeholder="// seleziona categoria" />
             </SelectTrigger>
             <SelectContent className="bg-gray-900 border-blue-500/30 text-blue-300">
               {categories.map((category) => (

@@ -119,9 +119,9 @@ const Index = () => {
                 <Label htmlFor="topic" className="text-green-400 font-mono">
                   const topic = <span className="text-yellow-400">"string"</span>
                 </Label>
-                <Textarea
+                  <Textarea
                   id="topic"
-                  placeholder="// Enter your topic here..."
+                  placeholder="// Inserisci l'argomento qui..."
                   value={topic}
                   onChange={(e) => setTopic(e.target.value)}
                   className="min-h-[100px] resize-none bg-gray-900/50 border-green-500/30 text-green-300 placeholder:text-green-500/50 font-mono"
@@ -134,7 +134,7 @@ const Index = () => {
                 </Label>
                 <Select value={writingStyle} onValueChange={setWritingStyle}>
                   <SelectTrigger className="bg-gray-900/50 border-green-500/30 text-green-300 font-mono">
-                    <SelectValue placeholder="// select writing style" />
+                    <SelectValue placeholder="// seleziona stile di scrittura" />
                   </SelectTrigger>
                   <SelectContent className="bg-gray-900 border-green-500/30 text-green-300">
                     <SelectItem value="professionale">Professionale - Stile business formale</SelectItem>

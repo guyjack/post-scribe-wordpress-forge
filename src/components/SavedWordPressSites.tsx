@@ -112,7 +112,7 @@ const SavedWordPressSites = ({ onSiteSelected }: SavedWordPressSitesProps) => {
           </Label>
           <Select value={selectedSiteId} onValueChange={handleSelectSite}>
             <SelectTrigger className="bg-gray-900/50 border-orange-500/30 text-orange-300 font-mono">
-              <SelectValue placeholder="// select saved WordPress site" />
+              <SelectValue placeholder="// seleziona sito WordPress salvato" />
             </SelectTrigger>
             <SelectContent className="bg-gray-900 border-orange-500/30 text-orange-300">
               {savedSites.map((site) => (
