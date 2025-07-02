@@ -1,7 +1,7 @@
 
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
-import { Code2, Tag, Target, FileText } from "lucide-react";
+import { Code2, Tag, Target, FileText, Image } from "lucide-react";
 
 interface PostPreviewProps {
   post: {
@@ -9,6 +9,7 @@ interface PostPreviewProps {
     content: string;
     excerpt: string;
     tags: string[];
+    imageUrl?: string;
     aioseo?: {
       articleTitle: string;
       metaDescription: string;
@@ -66,6 +67,29 @@ const PostPreview = ({ post }: PostPreviewProps) => {
           {post.title}
         </h2>
       </div>
+
+      <Separator className="bg-purple-500/20" />
+
+      {/* Post Image */}
+      {post.imageUrl && (
+        <div>
+          <div className="flex items-center gap-2 mb-2">
+            <Image className="h-4 w-4 text-purple-400" />
+            <span className="text-purple-400 font-bold">post.featuredImage</span>
+          </div>
+          <div className="bg-gray-900/30 p-3 rounded border border-purple-500/20">
+            <img 
+              src={post.imageUrl} 
+              alt={post.title}
+              className="w-full h-48 object-cover rounded border border-purple-500/20"
+              loading="lazy"
+            />
+            <p className="text-purple-400/70 text-xs mt-2 font-mono">
+              src: "{post.imageUrl}"
+            </p>
+          </div>
+        </div>
+      )}
 
       <Separator className="bg-purple-500/20" />
 

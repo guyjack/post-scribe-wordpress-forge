@@ -74,51 +74,51 @@ export const generatePost = async (topic: string, writingStyle: string = "profes
 
 // Funzione per generare URL immagini ottimizzate per SEO basate sul topic
 const generateOptimizedImageUrl = (topic: string): string => {
-  // Mappa dei topic più comuni con immagini tematiche specifiche
+  // Mappa dei topic più comuni con immagini tematiche specifiche (ridotte a 600x400 per performance)
   const topicImageMap: { [key: string]: string } = {
     // Business & Marketing
-    'marketing': 'https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=800&h=450&fit=crop',
-    'social media': 'https://images.unsplash.com/photo-1611162617474-5b21e879e113?w=800&h=450&fit=crop',
-    'business': 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=800&h=450&fit=crop',
-    'vendite': 'https://images.unsplash.com/photo-1556745753-b2904692b3cd?w=800&h=450&fit=crop',
-    'e-commerce': 'https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?w=800&h=450&fit=crop',
+    'marketing': 'https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=600&h=400&fit=crop&q=80',
+    'social media': 'https://images.unsplash.com/photo-1611162617474-5b21e879e113?w=600&h=400&fit=crop&q=80',
+    'business': 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=600&h=400&fit=crop&q=80',
+    'vendite': 'https://images.unsplash.com/photo-1556745753-b2904692b3cd?w=600&h=400&fit=crop&q=80',
+    'e-commerce': 'https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?w=600&h=400&fit=crop&q=80',
     
     // Technology
-    'tecnologia': 'https://images.unsplash.com/photo-1518709268805-4e9042af2176?w=800&h=450&fit=crop',
-    'intelligenza artificiale': 'https://images.unsplash.com/photo-1677442136019-21780ecad995?w=800&h=450&fit=crop',
-    'programmazione': 'https://images.unsplash.com/photo-1461749280684-dccba630e2f6?w=800&h=450&fit=crop',
-    'sviluppo web': 'https://images.unsplash.com/photo-1627398242454-45a1465c2479?w=800&h=450&fit=crop',
+    'tecnologia': 'https://images.unsplash.com/photo-1518709268805-4e9042af2176?w=600&h=400&fit=crop&q=80',
+    'intelligenza artificiale': 'https://images.unsplash.com/photo-1677442136019-21780ecad995?w=600&h=400&fit=crop&q=80',
+    'programmazione': 'https://images.unsplash.com/photo-1461749280684-dccba630e2f6?w=600&h=400&fit=crop&q=80',
+    'sviluppo web': 'https://images.unsplash.com/photo-1627398242454-45a1465c2479?w=600&h=400&fit=crop&q=80',
     
     // Health & Wellness
-    'salute': 'https://images.unsplash.com/photo-1559757148-5c350d0d3c56?w=800&h=450&fit=crop',
-    'fitness': 'https://images.unsplash.com/photo-1571019613540-996a182cb2e0?w=800&h=450&fit=crop',
-    'benessere': 'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=800&h=450&fit=crop',
-    'nutrizione': 'https://images.unsplash.com/photo-1490645935967-10de6ba17061?w=800&h=450&fit=crop',
+    'salute': 'https://images.unsplash.com/photo-1559757148-5c350d0d3c56?w=600&h=400&fit=crop&q=80',
+    'fitness': 'https://images.unsplash.com/photo-1571019613540-996a182cb2e0?w=600&h=400&fit=crop&q=80',
+    'benessere': 'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=600&h=400&fit=crop&q=80',
+    'nutrizione': 'https://images.unsplash.com/photo-1490645935967-10de6ba17061?w=600&h=400&fit=crop&q=80',
     
     // Education & Learning
-    'educazione': 'https://images.unsplash.com/photo-1481627834876-b7833e8f5570?w=800&h=450&fit=crop',
-    'formazione': 'https://images.unsplash.com/photo-1522202176988-66273c2fd55f?w=800&h=450&fit=crop',
-    'apprendimento': 'https://images.unsplash.com/photo-1503676260728-1c00da094a0b?w=800&h=450&fit=crop',
+    'educazione': 'https://images.unsplash.com/photo-1481627834876-b7833e8f5570?w=600&h=400&fit=crop&q=80',
+    'formazione': 'https://images.unsplash.com/photo-1522202176988-66273c2fd55f?w=600&h=400&fit=crop&q=80',
+    'apprendimento': 'https://images.unsplash.com/photo-1503676260728-1c00da094a0b?w=600&h=400&fit=crop&q=80',
     
     // Finance
-    'finanza': 'https://images.unsplash.com/photo-1579621970563-ebec7560ff3e?w=800&h=450&fit=crop',
-    'investimenti': 'https://images.unsplash.com/photo-1611974789855-9c2a0a7236a3?w=800&h=450&fit=crop',
-    'criptovalute': 'https://images.unsplash.com/photo-1640161704729-cbe966a08853?w=800&h=450&fit=crop',
+    'finanza': 'https://images.unsplash.com/photo-1579621970563-ebec7560ff3e?w=600&h=400&fit=crop&q=80',
+    'investimenti': 'https://images.unsplash.com/photo-1611974789855-9c2a0a7236a3?w=600&h=400&fit=crop&q=80',
+    'criptovalute': 'https://images.unsplash.com/photo-1640161704729-cbe966a08853?w=600&h=400&fit=crop&q=80',
     
     // Travel & Lifestyle
-    'viaggio': 'https://images.unsplash.com/photo-1488646953014-85cb44e25828?w=800&h=450&fit=crop',
-    'lifestyle': 'https://images.unsplash.com/photo-1544367567-0f2fcb009e0b?w=800&h=450&fit=crop',
-    'casa': 'https://images.unsplash.com/photo-1586023492125-27b2c045efd7?w=800&h=450&fit=crop',
+    'viaggio': 'https://images.unsplash.com/photo-1488646953014-85cb44e25828?w=600&h=400&fit=crop&q=80',
+    'lifestyle': 'https://images.unsplash.com/photo-1544367567-0f2fcb009e0b?w=600&h=400&fit=crop&q=80',
+    'casa': 'https://images.unsplash.com/photo-1586023492125-27b2c045efd7?w=600&h=400&fit=crop&q=80',
     
     // Creative & Design
-    'design': 'https://images.unsplash.com/photo-1558655146-d09347e92766?w=800&h=450&fit=crop',
-    'fotografia': 'https://images.unsplash.com/photo-1606983340126-99ab4feaa64a?w=800&h=450&fit=crop',
-    'arte': 'https://images.unsplash.com/photo-1541961017774-22349e4a1262?w=800&h=450&fit=crop',
+    'design': 'https://images.unsplash.com/photo-1558655146-d09347e92766?w=600&h=400&fit=crop&q=80',
+    'fotografia': 'https://images.unsplash.com/photo-1606983340126-99ab4feaa64a?w=600&h=400&fit=crop&q=80',
+    'arte': 'https://images.unsplash.com/photo-1541961017774-22349e4a1262?w=600&h=400&fit=crop&q=80',
     
     // Food & Cooking
-    'cucina': 'https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?w=800&h=450&fit=crop',
-    'ricette': 'https://images.unsplash.com/photo-1490818387583-1baba5e638af?w=800&h=450&fit=crop',
-    'alimentazione': 'https://images.unsplash.com/photo-1490818387583-1baba5e638af?w=800&h=450&fit=crop'
+    'cucina': 'https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?w=600&h=400&fit=crop&q=80',
+    'ricette': 'https://images.unsplash.com/photo-1490818387583-1baba5e638af?w=600&h=400&fit=crop&q=80',
+    'alimentazione': 'https://images.unsplash.com/photo-1490818387583-1baba5e638af?w=600&h=400&fit=crop&q=80'
   };
   
   // Normalizza il topic per la ricerca
@@ -136,12 +136,12 @@ const generateOptimizedImageUrl = (topic: string): string => {
     }
   }
   
-  // Genera URL dinamico basato su parole chiave del topic per SEO
+  // Genera URL dinamico ottimizzato per performance (ridotto a 600x400)
   const topicWords = normalizedTopic.split(' ').filter(word => word.length > 2);
-  const searchQuery = topicWords.slice(0, 3).join(','); // Usa max 3 parole chiave
+  const searchQuery = encodeURIComponent(topicWords.slice(0, 2).join(' ')); // Usa max 2 parole chiave
   
-  // URL Unsplash ottimizzato per SEO con parole chiave specifiche
-  return `https://images.unsplash.com/photo-1557804506-669a67965ba0?w=800&h=450&fit=crop&q=80&auto=format&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D`;
+  // URL Unsplash ottimizzato per SEO e performance
+  return `https://images.unsplash.com/photo-1557804506-669a67965ba0?w=600&h=400&fit=crop&q=80&auto=format&ixlib=rb-4.0.3`;
 };
 
 // Funzione per generare titoli basati sullo stile
