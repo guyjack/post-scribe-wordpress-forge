@@ -6,8 +6,13 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Calendar } from "@/components/ui/calendar";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { toast } from "sonner";
-import { Loader2, Send, Terminal, Code, Database } from "lucide-react";
+import { Loader2, Send, Terminal, Code, Database, CalendarIcon } from "lucide-react";
+import { format } from "date-fns";
+import { it } from "date-fns/locale";
+import { cn } from "@/lib/utils";
 import { generatePost } from "@/services/postGenerator";
 import { publishToWordPress } from "@/services/wordpressApi";
 import PostPreview from "@/components/PostPreview";
@@ -28,6 +33,7 @@ const Index = () => {
   const [isGenerating, setIsGenerating] = useState(false);
   const [isPublishing, setIsPublishing] = useState(false);
   const [showPreview, setShowPreview] = useState(false);
+  const [publishDate, setPublishDate] = useState<Date>();
 
   const handleGeneratePost = async () => {
     if (!topic.trim()) {
@@ -57,7 +63,7 @@ const Index = () => {
 
     setIsPublishing(true);
     try {
-      await publishToWordPress(generatedPost, credentials, selectedCategory);
+      await publishToWordPress(generatedPost, credentials, selectedCategory, publishDate);
       toast.success("✓ Deployment successful");
     } catch (error) {
       console.error("Errore nella pubblicazione:", error);
@@ -210,24 +216,71 @@ const Index = () => {
               <CardContent className="pt-6">
                 <PostPreview post={generatedPost} />
                 
-                <div className="mt-6 flex justify-center">
-                  <Button 
-                    onClick={handlePublishPost}
-                    disabled={isPublishing || !credentials.siteUrl}
-                    className="bg-purple-600 hover:bg-purple-700 text-white font-mono font-bold border border-purple-400 px-8"
-                  >
-                    {isPublishing ? (
-                      <>
-                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                        <span>Deploying...</span>
-                      </>
-                    ) : (
-                      <>
-                        <Send className="mr-2 h-4 w-4" />
-                        <span>$ ./deploy --target=wordpress</span>
-                      </>
+                <div className="mt-6 space-y-4">
+                  {/* Selezione data pubblicazione */}
+                  <div className="flex flex-col items-center space-y-2">
+                    <Label className="text-purple-400 font-mono">
+                      Publish_Date = <span className="text-yellow-400">"datetime"</span>
+                    </Label>
+                    <Popover>
+                      <PopoverTrigger asChild>
+                        <Button
+                          variant="outline"
+                          className={cn(
+                            "w-[300px] justify-start text-left font-mono bg-gray-900/50 border-purple-500/30 text-purple-300",
+                            !publishDate && "text-purple-500/50"
+                          )}
+                        >
+                          <CalendarIcon className="mr-2 h-4 w-4" />
+                          {publishDate ? (
+                            format(publishDate, "PPP", { locale: it })
+                          ) : (
+                            <span>// Seleziona data pubblicazione</span>
+                          )}
+                        </Button>
+                      </PopoverTrigger>  
+                      <PopoverContent className="w-auto p-0 bg-gray-900 border-purple-500/30" align="start">
+                        <Calendar
+                          mode="single"
+                          selected={publishDate}
+                          onSelect={setPublishDate}
+                          disabled={(date) => date < new Date()}
+                          initialFocus
+                          className="p-3 pointer-events-auto text-purple-300"
+                        />
+                      </PopoverContent>
+                    </Popover>
+                    {publishDate && (
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => setPublishDate(undefined)}
+                        className="text-purple-400/70 hover:text-purple-400 font-mono text-xs"
+                      >
+                        // clear date
+                      </Button>
                     )}
-                  </Button>
+                  </div>
+                  
+                  <div className="flex justify-center">
+                    <Button 
+                      onClick={handlePublishPost}
+                      disabled={isPublishing || !credentials.siteUrl}
+                      className="bg-purple-600 hover:bg-purple-700 text-white font-mono font-bold border border-purple-400 px-8"
+                    >
+                      {isPublishing ? (
+                        <>
+                          <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                          <span>Deploying...</span>
+                        </>
+                      ) : (
+                        <>
+                          <Send className="mr-2 h-4 w-4" />
+                          <span>$ ./deploy {publishDate ? '--scheduled' : '--immediate'}</span>
+                        </>
+                      )}
+                    </Button>
+                  </div>
                 </div>
               </CardContent>
             </Card>

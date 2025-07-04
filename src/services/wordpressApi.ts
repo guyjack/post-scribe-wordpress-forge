@@ -363,7 +363,8 @@ const getOrCreateTags = async (
 export const publishToWordPress = async (
   post: GeneratedPost, 
   credentials: WordPressCredentials, 
-  categoryId: string
+  categoryId: string,
+  publishDate?: Date
 ) => {
   console.log("📝 Pubblicando post su WordPress...");
   
@@ -390,13 +391,18 @@ export const publishToWordPress = async (
       console.warn("⚠️ Errore nel caricamento dell'immagine (continuo senza):", error);
     }
     
+    // Determina lo status e la data in base alla data di pubblicazione
+    const isScheduled = publishDate && publishDate > new Date();
+    const postStatus = isScheduled ? 'future' : 'publish';
+    
     const postData = {
       title: post.title,
       content: post.content,
       excerpt: post.excerpt,
-      status: 'publish',
+      status: postStatus,
       categories: categoryId ? [parseInt(categoryId)] : [],
       tags: tagIds,
+      ...(publishDate && { date: publishDate.toISOString() }),
       ...(featuredMediaId && { featured_media: featuredMediaId }),
       meta: {
         // Meta tradizionali per Yoast SEO (compatibilità)
