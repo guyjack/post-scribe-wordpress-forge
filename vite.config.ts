@@ -22,7 +22,8 @@ export default defineConfig(({ mode }) => ({
 //   componentTagger(),
 // ].filter(Boolean),
 plugins: [
-  react()
+  react(),
+  ...(process.env.NODE_ENV === 'development' ? [componentTagger()] : [])
 ],
   resolve: {
     alias: {
