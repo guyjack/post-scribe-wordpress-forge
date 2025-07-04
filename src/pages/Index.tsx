@@ -117,7 +117,7 @@ const Index = () => {
             <CardContent className="space-y-6 pt-6">
               <div className="space-y-2">
                 <Label htmlFor="topic" className="text-green-400 font-mono">
-                  const topic = <span className="text-yellow-400">"string"</span>
+                  Argomento = <span className="text-yellow-400">"string"</span>
                 </Label>
                   <Textarea
                   id="topic"
@@ -130,7 +130,7 @@ const Index = () => {
 
               <div className="space-y-2">
                 <Label className="text-green-400 font-mono">
-                  const writingStyle = <span className="text-yellow-400">"option"</span>
+                  Style = <span className="text-yellow-400">"option"</span>
                 </Label>
                 <Select value={writingStyle} onValueChange={setWritingStyle}>
                   <SelectTrigger className="bg-gray-900/50 border-green-500/30 text-green-300 font-mono">
