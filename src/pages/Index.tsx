@@ -111,7 +111,7 @@ const Index = () => {
                 <span className="font-mono">function generatePost()</span>
               </CardTitle>
               <CardDescription className="text-green-300/70 font-mono">
-                {'{'} Inserire l'argomento del Post {'}'}
+                {'{'} Inserire l'argomento e stile del Post {'}'}
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-6 pt-6">
