@@ -1,3 +1,9 @@
+// vite.config.ts
+import { webcrypto as crypto } from 'node:crypto';
+// Polyfill globale per getRandomValues in Node.js
+if (!globalThis.crypto) {
+  globalThis.crypto = crypto;
+}
 import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react-swc";
 import path from "path";
