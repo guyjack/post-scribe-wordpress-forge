@@ -26,18 +26,8 @@ export const generatePost = async (topic: string, writingStyle: string = "profes
   // Excerpt professionale e SEO-friendly
   const excerpt = `Guida professionale completa su ${topic}: strategie avanzate, metodologie comprovate e best practice per ottenere risultati eccellenti. Include framework operativo e piano di implementazione dettagliato.`;
   
-  // Tags ottimizzati per SEO e AIOSEO
-  const tags = [
-    focusKeyphrase,
-    'guida professionale',
-    'strategie avanzate',
-    'best practices',
-    'metodologie comprovate',
-    '2024',
-    'successo professionale',
-    'competenze specialistiche',
-    topic.split(' ')[0]?.toLowerCase() || 'business'
-  ].filter(Boolean);
+  // Tags ottimizzati con analisi semantica avanzata per AIOSEO
+  const tags = generateAdvancedTags(topic, focusKeyphrase);
   
   // Genera un'immagine pertinente e professionale
   const imageUrl = generateOptimizedImageUrl(topic);
@@ -211,6 +201,101 @@ const generateContentByStyle = (topic: string, style: string, focusKeyphrase: st
   };
 
   return contentStyles[style] || contentStyles.professionale;
+};
+
+// Funzione avanzata per generare tag semanticamente pertinenti per AIOSEO
+const generateAdvancedTags = (topic: string, focusKeyphrase: string): string[] => {
+  const normalizedTopic = topic.toLowerCase().trim();
+  const mainKeywords = focusKeyphrase.split(' ');
+  
+  // Database di parole chiave semanticamente correlate per settori
+  const semanticKeywords: { [key: string]: string[] } = {
+    // Business & Marketing
+    marketing: ['brand awareness', 'lead generation', 'conversion rate', 'roi marketing', 'digital strategy', 'content marketing', 'email marketing', 'seo marketing'],
+    business: ['crescita aziendale', 'business plan', 'strategia business', 'analisi mercato', 'competitività', 'innovazione', 'leadership', 'gestione'],
+    vendite: ['tecniche vendita', 'closing', 'prospecting', 'crm', 'sales funnel', 'negoziazione', 'customer retention', 'upselling'],
+    
+    // Technology
+    tecnologia: ['innovazione tech', 'trasformazione digitale', 'automation', 'software development', 'tech trends', 'cybersecurity', 'cloud computing'],
+    programmazione: ['coding', 'sviluppo software', 'algoritmi', 'framework', 'best practices', 'debugging', 'clean code', 'architettura software'],
+    'intelligenza artificiale': ['machine learning', 'deep learning', 'neural networks', 'ai tools', 'automation', 'data science', 'nlp'],
+    
+    // Health & Wellness
+    salute: ['benessere fisico', 'prevenzione', 'stile vita sano', 'medicina preventiva', 'wellness', 'salute mentale', 'nutrizione'],
+    fitness: ['allenamento', 'workout', 'massa muscolare', 'cardio', 'forza', 'resistenza', 'personal trainer', 'fitness goals'],
+    
+    // Finance
+    finanza: ['investimenti', 'trading', 'pianificazione finanziaria', 'budget', 'risparmio', 'mercati finanziari', 'portafoglio'],
+    investimenti: ['portfolio', 'diversificazione', 'rendimenti', 'rischio investimento', 'asset allocation', 'mercato azionario'],
+    
+    // Education
+    formazione: ['apprendimento', 'skill development', 'competenze', 'corsi online', 'certificazioni', 'upskilling', 'formazione continua'],
+    educazione: ['metodologie didattiche', 'e-learning', 'pedagogia', 'sviluppo cognitivo', 'formazione professionale']
+  };
+  
+  // Parole chiave universali ad alto valore SEO
+  const universalSeoKeywords = [
+    'guida completa', 'tutorial', 'consigli esperti', 'strategie efficaci', 'best practices', 
+    'metodologie', 'tecniche avanzate', 'step by step', 'case study', 'esempi pratici',
+    '2024', '2025', 'aggiornato', 'professionale', 'certificato', 'comprovato'
+  ];
+  
+  // Long-tail keywords basate sul topic
+  const longTailVariations = [
+    `come ${normalizedTopic}`,
+    `migliore ${normalizedTopic}`,
+    `${normalizedTopic} professionale`,
+    `${normalizedTopic} avanzato`,
+    `corso ${normalizedTopic}`,
+    `guida ${normalizedTopic}`,
+    `strategie ${normalizedTopic}`,
+    `tecniche ${normalizedTopic}`
+  ];
+  
+  let tags: string[] = [];
+  
+  // 1. Focus keyphrase e variazioni
+  tags.push(focusKeyphrase);
+  mainKeywords.forEach(keyword => {
+    if (keyword.length > 2) {
+      tags.push(keyword);
+      tags.push(`${keyword} 2024`);
+      tags.push(`${keyword} professionale`);
+    }
+  });
+  
+  // 2. Parole chiave semanticamente correlate
+  Object.entries(semanticKeywords).forEach(([key, keywords]) => {
+    if (normalizedTopic.includes(key) || key.includes(normalizedTopic.split(' ')[0])) {
+      tags.push(...keywords.slice(0, 4)); // Prendi le prime 4 più rilevanti
+    }
+  });
+  
+  // 3. Long-tail keywords specifiche
+  tags.push(...longTailVariations.slice(0, 3));
+  
+  // 4. Keywords universali SEO
+  tags.push(...universalSeoKeywords.slice(0, 6));
+  
+  // 5. Analisi delle parole del topic per LSI keywords
+  const topicWords = normalizedTopic.split(' ').filter(word => word.length > 3);
+  topicWords.forEach(word => {
+    tags.push(`${word} guida`);
+    tags.push(`${word} tutorial`);
+    tags.push(`${word} strategie`);
+  });
+  
+  // 6. Rimuovi duplicati e parole troppo corte, limita lunghezza
+  const uniqueTags = [...new Set(tags)]
+    .filter(tag => tag.length > 2 && tag.length < 60)
+    .slice(0, 15); // Massimo 15 tag per ottimizzazione AIOSEO
+  
+  // 7. Ordina per rilevanza (focus keyphrase per primo)
+  return uniqueTags.sort((a, b) => {
+    if (a === focusKeyphrase) return -1;
+    if (b === focusKeyphrase) return 1;
+    return 0;
+  });
 };
 
 // Contenuto professionale ottimizzato per AIOSEO
