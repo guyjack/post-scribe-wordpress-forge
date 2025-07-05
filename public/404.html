@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html>
   <head>
@@ -7,15 +8,14 @@
       // Single Page Apps for GitHub Pages
       // MIT License
       // https://github.com/rafgraph/spa-github-pages
-      var pathToRedirect = window.location.pathname.slice(1);
-      var query = window.location.search.slice(1);
-      
-      window.history.replaceState(
-        null,
-        null,
-        '/' +
-        (pathToRedirect && pathToRedirect !== '404.html' ? '?' + pathToRedirect : '') +
-        (query && pathToRedirect !== '404.html' ? '&' + query : query)
+      var segmentCount = 1;
+      var l = window.location;
+      l.replace(
+        l.protocol + '//' + l.hostname + (l.port ? ':' + l.port : '') +
+        l.pathname.split('/').slice(0, 1 + segmentCount).join('/') + '/?/' +
+        l.pathname.slice(1).split('/').slice(segmentCount).join('/').replace(/&/g, '~and~') +
+        (l.search ? '&' + l.search.slice(1).replace(/&/g, '~and~') : '') +
+        l.hash
       );
     </script>
   </head>
