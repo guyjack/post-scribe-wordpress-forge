@@ -14,7 +14,7 @@ const App = () => (
     <TooltipProvider>
       <Toaster />
       <Sonner />
-      <BrowserRouter basename="/post-scribe-wordpress-forge">
+      <BrowserRouter basename={window.location.hostname.includes('github.io') ? '/post-scribe-wordpress-forge' : ''}>
         <Routes>
           <Route path="/" element={<Index />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
