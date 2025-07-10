@@ -1,5 +1,5 @@
 
-export const generatePost = async (topic: string, writingStyle: string = "professionale") => {
+export const generatePost = async (topic: string, writingStyle: string = "professionale", feedback: string = "") => {
   console.log("Generando post ottimizzato SEO per argomento:", topic, "con stile:", writingStyle);
   
   // Simulazione di delay per l'API
@@ -20,14 +20,14 @@ export const generatePost = async (topic: string, writingStyle: string = "profes
   // Meta description ottimizzata (150-160 caratteri con CTA)
   const metaDescription = `✓ Guida completa ${focusKeyphrase} 2024. Strategie comprovate, tecniche avanzate e risultati garantiti. Scopri come eccellere oggi stesso!`;
   
-  // Contenuto basato sullo stile selezionato con focus keyphrase
-  const content = generateContentByStyle(topic, writingStyle, focusKeyphrase);
+  // Contenuto basato sullo stile selezionato con focus keyphrase e feedback
+  const content = generateContentByStyle(topic, writingStyle, focusKeyphrase, feedback);
   
   // Excerpt professionale e SEO-friendly
   const excerpt = `Guida professionale completa su ${topic}: strategie avanzate, metodologie comprovate e best practice per ottenere risultati eccellenti. Include framework operativo e piano di implementazione dettagliato.`;
   
-  // Tags ottimizzati con analisi semantica avanzata per AIOSEO
-  const tags = generateAdvancedTags(topic, focusKeyphrase);
+  // Tags ottimizzati con analisi semantica avanzata per AIOSEO e feedback
+  const tags = generateAdvancedTags(topic, focusKeyphrase, feedback);
   
   // Genera un'immagine pertinente e professionale
   const imageUrl = generateOptimizedImageUrl(topic);
@@ -190,21 +190,21 @@ const getTitleVariations = (topic: string, style: string): string[] => {
 };
 
 // Funzione per generare contenuto basato sullo stile
-const generateContentByStyle = (topic: string, style: string, focusKeyphrase: string): string => {
+const generateContentByStyle = (topic: string, style: string, focusKeyphrase: string, feedback: string = ""): string => {
   const contentStyles: { [key: string]: string } = {
-    professionale: generateProfessionalContent(topic, focusKeyphrase),
-    tecnico: generateTechnicalContent(topic, focusKeyphrase),
-    divulgativo: generateDivulgativeContent(topic, focusKeyphrase),
-    accademico: generateAcademicContent(topic, focusKeyphrase),
-    informale: generateInformalContent(topic, focusKeyphrase),
-    vendita: generateSalesContent(topic, focusKeyphrase)
+    professionale: generateProfessionalContent(topic, focusKeyphrase, feedback),
+    tecnico: generateTechnicalContent(topic, focusKeyphrase, feedback),
+    divulgativo: generateDivulgativeContent(topic, focusKeyphrase, feedback),
+    accademico: generateAcademicContent(topic, focusKeyphrase, feedback),
+    informale: generateInformalContent(topic, focusKeyphrase, feedback),
+    vendita: generateSalesContent(topic, focusKeyphrase, feedback)
   };
 
   return contentStyles[style] || contentStyles.professionale;
 };
 
 // Funzione avanzata per generare tag semanticamente pertinenti per AIOSEO
-const generateAdvancedTags = (topic: string, focusKeyphrase: string): string[] => {
+const generateAdvancedTags = (topic: string, focusKeyphrase: string, feedback: string = ""): string[] => {
   const normalizedTopic = topic.toLowerCase().trim();
   const mainKeywords = focusKeyphrase.split(' ');
   
@@ -285,12 +285,34 @@ const generateAdvancedTags = (topic: string, focusKeyphrase: string): string[] =
     tags.push(`${word} strategie`);
   });
   
-  // 6. Rimuovi duplicati e parole troppo corte, limita lunghezza
+  // 6. Applica feedback per ottimizzare i tag
+  let maxTags = 15;
+  let filterCriteria = [];
+  
+  if (feedback) {
+    const feedbackLower = feedback.toLowerCase();
+    if (feedbackLower.includes('riduci') || feedbackLower.includes('meno')) {
+      if (feedbackLower.includes('5')) maxTags = 5;
+      else if (feedbackLower.includes('8')) maxTags = 8;
+      else if (feedbackLower.includes('10')) maxTags = 10;
+      else maxTags = 8; // default ridotto
+    }
+    if (feedbackLower.includes('specifici') || feedbackLower.includes('specifico')) {
+      // Rimuovi tag generici
+      tags = tags.filter(tag => !universalSeoKeywords.slice(0, 3).includes(tag));
+    }
+    if (feedbackLower.includes('tecnici') || feedbackLower.includes('tecnico')) {
+      // Aggiungi più tag tecnici
+      tags.push('implementazione', 'configurazione', 'ottimizzazione');
+    }
+  }
+
+  // 7. Rimuovi duplicati e parole troppo corte, limita lunghezza
   const uniqueTags = [...new Set(tags)]
     .filter(tag => tag.length > 2 && tag.length < 60)
-    .slice(0, 15); // Massimo 15 tag per ottimizzazione AIOSEO
+    .slice(0, maxTags);
   
-  // 7. Ordina per rilevanza (focus keyphrase per primo)
+  // 8. Ordina per rilevanza (focus keyphrase per primo)
   return uniqueTags.sort((a, b) => {
     if (a === focusKeyphrase) return -1;
     if (b === focusKeyphrase) return 1;
@@ -299,7 +321,7 @@ const generateAdvancedTags = (topic: string, focusKeyphrase: string): string[] =
 };
 
 // Contenuto professionale ottimizzato per AIOSEO
-const generateProfessionalContent = (topic: string, focusKeyphrase: string): string => {
+const generateProfessionalContent = (topic: string, focusKeyphrase: string, feedback: string = ""): string => {
   return `
     <div class="article-introduction">
       <p class="lead-paragraph">La <strong>${focusKeyphrase}</strong> rappresenta oggi un elemento cruciale per il successo in ambito professionale. Questa guida completa su <strong>${topic}</strong> ti fornirà tutte le competenze necessarie per eccellere attraverso strategie comprovate e metodologie professionali avanzate.</p>
@@ -338,7 +360,7 @@ const generateProfessionalContent = (topic: string, focusKeyphrase: string): str
 };
 
 // Contenuto tecnico ottimizzato per AIOSEO
-const generateTechnicalContent = (topic: string, focusKeyphrase: string): string => {
+const generateTechnicalContent = (topic: string, focusKeyphrase: string, feedback: string = ""): string => {
   return `
     <div class="technical-overview">
       <p class="spec-intro">Questo documento fornisce le specifiche tecniche complete per l'implementazione di <strong>${focusKeyphrase}</strong>, includendo architetture, protocolli e procedure operative standard per ${topic}.</p>
@@ -370,7 +392,7 @@ const generateTechnicalContent = (topic: string, focusKeyphrase: string): string
 };
 
 // Contenuto divulgativo ottimizzato per AIOSEO
-const generateDivulgativeContent = (topic: string, focusKeyphrase: string): string => {
+const generateDivulgativeContent = (topic: string, focusKeyphrase: string, feedback: string = ""): string => {
   return `
     <div class="friendly-intro">
       <p>Ciao! Oggi parliamo di <strong>${focusKeyphrase}</strong> in modo semplice e chiaro. Non ti preoccupare se è la prima volta che senti parlare di ${topic}: alla fine di questa guida avrai capito tutto quello che serve!</p>
@@ -407,7 +429,7 @@ const generateDivulgativeContent = (topic: string, focusKeyphrase: string): stri
 };
 
 // Contenuto accademico ottimizzato per AIOSEO
-const generateAcademicContent = (topic: string, focusKeyphrase: string): string => {
+const generateAcademicContent = (topic: string, focusKeyphrase: string, feedback: string = ""): string => {
   return `
     <div class="abstract">
       <p><strong>Abstract:</strong> Questo studio esamina <strong>${focusKeyphrase}</strong> attraverso un'analisi multidisciplinare, integrando metodologie quantitative e qualitative per fornire una comprensione approfondita del fenomeno ${topic}.</p>
@@ -443,7 +465,7 @@ const generateAcademicContent = (topic: string, focusKeyphrase: string): string 
 };
 
 // Contenuto informale ottimizzato per AIOSEO
-const generateInformalContent = (topic: string, focusKeyphrase: string): string => {
+const generateInformalContent = (topic: string, focusKeyphrase: string, feedback: string = ""): string => {
   return `
     <div class="casual-intro">
       <p>Allora, vuoi sapere tutto su <strong>${focusKeyphrase}</strong>? Perfetto, sei nel posto giusto! Ti racconto la mia esperienza con ${topic} e quello che ho imparato strada facendo.</p>
@@ -480,7 +502,7 @@ const generateInformalContent = (topic: string, focusKeyphrase: string): string 
 };
 
 // Contenuto per vendita ottimizzato per AIOSEO
-const generateSalesContent = (topic: string, focusKeyphrase: string): string => {
+const generateSalesContent = (topic: string, focusKeyphrase: string, feedback: string = ""): string => {
   return `
     <div class="attention-grabber">
       <p class="headline">Scopri il SEGRETO che sta trasformando la vita di migliaia di persone attraverso <strong>${focusKeyphrase}</strong>!</p>

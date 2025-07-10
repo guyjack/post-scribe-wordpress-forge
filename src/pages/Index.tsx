@@ -34,6 +34,7 @@ const Index = () => {
   const [isPublishing, setIsPublishing] = useState(false);
   const [showPreview, setShowPreview] = useState(false);
   const [publishDate, setPublishDate] = useState<Date>();
+  const [feedbackText, setFeedbackText] = useState("");
 
   const handleGeneratePost = async () => {
     if (!topic.trim()) {
@@ -43,13 +44,32 @@ const Index = () => {
 
     setIsGenerating(true);
     try {
-      const post = await generatePost(topic, writingStyle);
+      const post = await generatePost(topic, writingStyle, feedbackText);
       setGeneratedPost(post);
       setShowPreview(true);
       toast.success("✓ Post compiled successfully");
     } catch (error) {
       console.error("Errore nella generazione del post:", error);
       toast.error("✗ Compilation failed");
+    } finally {
+      setIsGenerating(false);
+    }
+  };
+
+  const handleRegenerateWithFeedback = async () => {
+    if (!topic.trim()) {
+      toast.error("$ error: topic argument required");
+      return;
+    }
+
+    setIsGenerating(true);
+    try {
+      const post = await generatePost(topic, writingStyle, feedbackText);
+      setGeneratedPost(post);
+      toast.success("✓ Post recompiled with feedback");
+    } catch (error) {
+      console.error("Errore nella rigenerazione del post:", error);
+      toast.error("✗ Recompilation failed");
     } finally {
       setIsGenerating(false);
     }
@@ -215,6 +235,46 @@ const Index = () => {
               </CardHeader>
               <CardContent className="pt-6">
                 <PostPreview post={generatedPost} />
+                
+                {/* Sezione Feedback per Miglioramenti */}
+                <div className="mt-6 border border-yellow-500/30 bg-gray-900/30 rounded-lg p-4">
+                  <div className="flex items-center gap-2 mb-4">
+                    <Code className="h-4 w-4 text-yellow-400" />
+                    <span className="text-yellow-400 font-mono font-bold">optimize.feedback()</span>
+                  </div>
+                  <div className="space-y-4">
+                    <div className="space-y-2">
+                      <Label htmlFor="feedback" className="text-yellow-400 font-mono">
+                        Correzioni = <span className="text-yellow-300">"string"</span>
+                      </Label>
+                      <Textarea
+                        id="feedback"
+                        placeholder="// Esempio: riduci tags a massimo 5, usa termini più specifici, migliora la struttura del contenuto, ecc..."
+                        value={feedbackText}
+                        onChange={(e) => setFeedbackText(e.target.value)}
+                        className="min-h-[80px] resize-none bg-gray-900/50 border-yellow-500/30 text-yellow-300 placeholder:text-yellow-500/50 font-mono text-sm"
+                      />
+                    </div>
+                    <Button 
+                      onClick={handleRegenerateWithFeedback}
+                      disabled={isGenerating || !feedbackText.trim()}
+                      variant="outline"
+                      className="w-full bg-yellow-600/10 hover:bg-yellow-600/20 text-yellow-400 font-mono border-yellow-500/30"
+                    >
+                      {isGenerating ? (
+                        <>
+                          <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                          <span>Optimizing...</span>
+                        </>
+                      ) : (
+                        <>
+                          <Terminal className="mr-2 h-4 w-4" />
+                          <span>$ ./regenerate --optimize --feedback</span>
+                        </>
+                      )}
+                    </Button>
+                  </div>
+                </div>
                 
                 <div className="mt-6 space-y-4">
                   {/* Selezione data pubblicazione */}
